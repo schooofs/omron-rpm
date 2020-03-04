@@ -1,0 +1,28 @@
+{
+    "name": "digitalriver/dr-php-commerce-api-library",
+    "description": "PHP Library for DR Commerce Api",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pradeep",
+            "email": "prjadhav@digitalriver.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.0",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Digitalriver\\": "src/"
+        },
+        "classmap": [
+            "src/"
+        ]
+    }
+}
