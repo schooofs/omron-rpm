@@ -191,8 +191,9 @@ class Users extends CI_Controller
         {
 
             $this->form_validation->set_rules('firstName', 'firstname', 'required');
-            $this->form_validation->set_rules('lastName', 'firstname', 'required');
+            $this->form_validation->set_rules('lastName', 'lastName', 'required');
             $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+            $this->form_validation->set_rules('physicianid', 'physicianid', 'required');
             $this->form_validation->set_rules('password', 'password', 'required');
             $this->form_validation->set_rules('conf_password', 'confirm password', 'required|matches[password]');
             // $this->form_validation->set_rules('address1', 'address', 'required');
@@ -257,6 +258,7 @@ class Users extends CI_Controller
                     // $this->session->set_userdata(
                     //     'access_token', $getFullAccessToken['access_token']
                     // );
+
                     $this->session->set_userdata(
                         'dr_session_token', $drSessionToken
                     );
@@ -264,7 +266,12 @@ class Users extends CI_Controller
                         'user_login', $userDetails['emailAddress']
                     );
 
-                    // $data['fullAccessToken'] = $getFullAccessToken['access_token'];
+                    $this->db->insert('ci_users', array(
+                        'gc_reference'  => $userDetails['emailAddress'],
+                        'email'         => $userDetails['emailAddress'],
+                        'physician_id'  => strip_tags($this->input->post('physicianId')),
+                    ));
+
                     $data['status'] = 'ok';
                     $this->session->set_userdata('success_msg', 'Your registration was successfully. Please login to your account.');
                     

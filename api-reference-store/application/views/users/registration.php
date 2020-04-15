@@ -9,7 +9,7 @@
   <script src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="container white-bg">
     <h2 class="alert alert-info">User Registration</h2>
     <?php
     if(!empty($success_msg)){
@@ -32,8 +32,20 @@
           </div>
         </div>
         <div class="form-group">
-            <input type="email" class="form-control" name="email" placeholder="Email" required="" value="<?php echo !empty($user['email'])?$user['email']:''; ?>">
+          <div class="row">
+            <div class="col-md-12">
+              <input type="email" class="form-control" name="email" placeholder="Email" required="" value="<?php echo !empty($user['email'])?$user['email']:''; ?>">
           <?php echo form_error('email','<span class="help-block">','</span>'); ?>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-12">
+              <input type="text" class="form-control" name="physicianId" placeholder="Physician ID" required="" value="<?php echo !empty($user['physicianId'])?$user['physicianId']:''; ?>">
+            <?php echo form_error('physicianid','<span class="help-block">','</span>'); ?>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <input type="password" class="form-control" name="password" placeholder="Password" required="">

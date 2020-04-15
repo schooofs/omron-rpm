@@ -33,11 +33,10 @@ class Api extends RestController {
 
     public function physicians_post()
     {
-		print_r($this->post());
-
-		$this->response( [
-			'status' => true,
-			'message' => 'Success'
-		], 200 );
+		var_dump($this->input);
+		// $this->response( [
+		// 	'status' => true,
+		// 	'message' => 'Success'
+		// ], 200 );
     }
 }
