@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">  
-<head>
-<link href="<?php echo base_url(); ?>assets/css/style.css" rel='stylesheet' type='text/css' />
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="<?php echo base_url();?>assets/css/style.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
-  <script src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
-</head>
-<body>
+<?php
+// load the header file 
+// $this->load->view('header');
+?>
 <div class="container">
     <h2 class="alert alert-info">User Account</h2>
     
@@ -24,5 +17,5 @@
       </div>
     </form>
 </div>
-</body>
-</html>
+<?php 
+// $this->load->view('footer');

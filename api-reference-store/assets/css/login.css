@@ -1,0 +1,58 @@
+.login-wrapper {
+    background-image: url('../images/login-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.login-wrapper .login-content {
+    padding: 60px 60px 220px 60px;
+    position: relative;
+    z-index: 4;
+}
+
+.login-wrapper .login-content::before {
+    position: absolute;
+    opacity: .9;
+    background-color: white;
+    content: ' ';
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+}
+
+.login-wrapper .login-content img {
+    padding-bottom: 20px;
+}
+
+.login-wrapper .login-content .section-title {
+    font-family: Gotham;
+    font-weight: 600;
+    font-size: 54px;
+    color: #0072bc;
+}
+
+.login-wrapper .login-content label {
+    font-size: 18px;
+    color: #000000;
+    line-height: 24px;
+}
+
+.login-wrapper .footInfo {
+    font-size: 12px;
+    padding-bottom: 13px;
+}
+
+.form-wrapper .btn {
+    width: auto;
+    background: #2b3e50;
+    color: white;
+    font-size: 16px;
+    border: 1px solid #2b3e50;
+    border-radius: 0;
+    padding: 8px 62px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
