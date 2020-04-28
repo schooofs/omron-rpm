@@ -51,7 +51,7 @@ footer {
 }
 
 footer .content-wrapper {
-    padding: 25px 0 ;
+    padding: 25px 0;
 }
 
 footer .content-wrapper p {
@@ -59,29 +59,50 @@ footer .content-wrapper p {
 }
 
 footer img.pull-right {
-    margin-top: 35px;
+    margin: 35px 0 20px;
 }
 
 .content-wrapper {
     padding: 60px 38px;
+    margin-bottom: 55px;
 }
 
 .form-wrapper input {
-    width: 513px;
-    font-size: 14px;
+    font-size: 16px;
     padding: 7px 10px;
     height: 48px;
     border: 1px solid #8c8c8c;
     border-radius: 0;
     background-color: #ffffff;
     font-family: Gotham;
-    color: #adadad;
     max-width: 514px;
+    width: 100%;
 }
 
-    .form-wrapper .form-group {
+.form-wrapper select {
+    font-size: 16px;
+    padding: 7px 10px;
+    height: 48px;
+    border: 1px solid #8c8c8c;
+    border-radius: 0;
+    background-color: #ffffff;
+    font-family: Gotham;
+    max-width: 514px;
+    width: 100%;
+}
+
+.form-wrapper textarea {
+    font-size: 16px;
+    border: 1px solid #8c8c8c;
+    border-radius: 0;
+    color: #adadad;
+    max-width: 514px;
+    width: 100%;
+}
+
+.form-wrapper .form-group {
     padding-bottom: 30px;
-    }
+}
 
 .sec-divider {
     margin: 0 0 38px 0;
@@ -94,4 +115,5 @@ footer img.pull-right {
     font-size: 22px;
     color: #2b3e50;
     padding-bottom: 20px;
+    display: inline-block;
 }

@@ -1,0 +1,23 @@
+.cards-label {
+    font-weight: 500;
+    font-size: 18px;
+    color: #000000;
+}
+
+.payment-cards {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.payment-cards li {
+    display: inline-block;
+}
+
+.card-img {
+    position: absolute;
+    height: 41px;
+    width: 42px;
+    top: 36px;
+    right: 21px;
+}
