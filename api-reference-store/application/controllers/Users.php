@@ -27,11 +27,22 @@ class Users extends CI_Controller
      */
     public function account()
     {
+        $data= array();
+
+        if($this->session->userdata('success_msg'))
+        {
+            $data['success_msg'] = $this->session->userdata('success_msg');
+            $this->session->unset_userdata('success_msg');
+        }
+        if($this->session->userdata('error_msg'))
+        {
+            $data['error_msg'] = $this->session->userdata('error_msg');
+            $this->session->unset_userdata('error_msg');
+        }
+
         $shopperService =  new Digitalriver\Service\Shopper($this->_client);
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         // $cartService =  new Digitalriver\Service\Cart($this->_client);
-
-        $data = array();
 
         // var_dump($authService);
         // exit;
@@ -48,21 +59,28 @@ class Users extends CI_Controller
             $getShopperData = $shopperService->getShopperData($fullAccessToken);
             if ( isset($getShopperData['shopper']) )
             {
+                // var_dump($getShopperData['shopper']);
+                // exit;
                 $data['firstName'] = $getShopperData['shopper']['firstName'];
                 $data['lastName'] = $getShopperData['shopper']['lastName'];
+                $data['emailAddress'] = $getShopperData['shopper']['emailAddress'];
             } else {
                 $data['firstName'] = 'set_new';
                 $data['lastName'] = 'set_new';
+                $data['emailAddress'] = 'set_new';
             }
 
             // Get the shoppers addresses
             $getShoopperAddress = $shopperService->getShopperAddress($fullAccessToken);
-            // var_dump($getShoopperAddress);
-            // exit;
-            if ( isset($getShoopperAddress['addresses']['address']) ) {
-                $data['shoppersAddresses'] =  $getShoopperAddress['addresses']['address'];
-            } else {
-                $data['shoppersAddresses'] = 'set_new';
+
+            if(isset($getShoopperAddress['addresses']['address'])) {
+                $data['companyName'] = $getShoopperAddress['addresses']['address'][0]['companyName'];
+                $data['address1'] = $getShoopperAddress['addresses']['address'][0]['line1'];
+                $data['address2'] = $getShoopperAddress['addresses']['address'][0]['line2'];
+                $data['city'] = $getShoopperAddress['addresses']['address'][0]['city'];
+                $data['state'] = $getShoopperAddress['addresses']['address'][0]['countrySubdivision'];
+                $data['zip'] = $getShoopperAddress['addresses']['address'][0]['postalCode'];
+                $data['phone'] = $getShoopperAddress['addresses']['address'][0]['phoneNumber'];
             }
             
             // Get the shopper payment data
@@ -70,21 +88,78 @@ class Users extends CI_Controller
             // var_dump($shopperPaymentArray);
             // exit;
             if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                $data['shoppersPayment'] =  $shopperPaymentArray['paymentOptions']['paymentOption'];
+                $data['paymentInfo'] =  $shopperPaymentArray['paymentOptions']['paymentOption'];
             } else {
-                $data['shoppersPayment'] = 'set_new';
+                $data['paymentInfo'] = 'set_new';
             }
 
             $data['stateCodes'] = $this->get_states();
-            //load the view
-            $this->load->view('header');
-            $this->load->view('users/account', $data);
-            $this->load->view('footer');
+
+            if($this->input->post('accountSubmit')) {
+                $this->form_validation->set_rules('firstName', 'firstname', 'required');
+                $this->form_validation->set_rules('lastName', 'lastName', 'required');
+                $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+                $this->form_validation->set_rules('physicianid', 'physicianid', 'required');
+                $this->form_validation->set_rules('address1', 'address', 'required');
+                $this->form_validation->set_rules('phone', 'phone', 'required');
+                $this->form_validation->set_rules('zip', 'zip', 'required');
+                $this->form_validation->set_rules('city', 'city', 'required');
+                $this->form_validation->set_rules('country', 'country', 'required');
+
+                $userDetails = array (
+                    'emailAddress' => strip_tags($this->input->post('email')),
+                    'firstName' => strip_tags($this->input->post('firstName')),
+                    'lastName' => strip_tags($this->input->post('lastName')),
+                );
+
+                //Set shoppers details
+                $shopperDetails = $shopperService->updateShopper($fullAccessToken, $userDetails);
+
+                $billingDetails =  array(
+                    'nickName' => 'Default Address',
+                    'isDefault'=> 'true',
+                    'companyName' => strip_tags($this->input->post('companyName')),
+                    'firstName'=> strip_tags($this->input->post('firstName')),
+                    'lastName'=> strip_tags($this->input->post('lastName')),
+                    'line1'=> strip_tags($this->input->post('address1')),
+                    'line2'=> strip_tags($this->input->post('address2')),
+                    'city'=> strip_tags($this->input->post('city')),
+                    'country'=> 'US',
+                    'postalCode'=> strip_tags($this->input->post('zip')),
+                    'countryName'=> strip_tags($this->input->post('country')),
+                    'phoneNumber'=> strip_tags($this->input->post('phone')),
+                    'countrySubdivision' => strip_tags($this->input->post('state')),
+                );
+
+                //Set shoppers billing address
+                $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
+                
+                // // Create shopper payment
+                //     $paymentDetails = array(
+                //     'displayableNumber'     => strip_tags($this->input->post('cardNumber')),
+                //     'expirationYear'        => strip_tags($this->input->post('cardNumber')),
+                // );
+                // $paymentDetails = array(
+                //     'nickName'          => 'Default Payment',
+                //     'isDefault'         => 'true',
+                //     'type'              => 'CreditCardMethod',
+                //     'displayableNumber' =>  $paymentDetails['displayableNumber'],
+
+                // );
+                // $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
+                // $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
+                // $paymentID = $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'];
+
+            }
         }
         else
         {
             redirect('users/login');
         }
+
+        $this->load->view('header');
+        $this->load->view('users/account', $data);
+        $this->load->view('footer');
     }
     
     /*
@@ -136,25 +211,14 @@ class Users extends CI_Controller
                     $this->session->set_userdata(
                         'user_login', $this->input->post('email')
                     );
-                     
-                    // Get the shoppers addresses
-                    // $getShoopperAddress = $shopperService->getShopperAddress($getFullAccessToken['access_token']);
-                    // if ( isset($getShoopperAddress['addresses']['address']) ) {
-                    //     $data['shoppersAddresses'] =  $getShoopperAddress['addresses']['address'];
-                    // } else {
-                    //     $data['shoppersAddresses'] = 'set_new';
-                    // }
-                    
-                    // $shopperPaymentArray = $shopperService->getShopperPayments($getFullAccessToken['access_token']);
-                    // if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                    //     $data['shoppersPayment'] =  $shopperPaymentArray['paymentOptions']['paymentOption'];
-                    // } else {
-                    //     $data['shoppersPayment'] = 'set_new';
-                    // }
-                    
+
+                    $this->session->set_userdata('success_msg', 'Your login was successful. Please enter the required user and payment information bellow.');
+
                     $data['status'] = 'ok';
                     $data['fullAccessToken'] = $getFullAccessToken['access_token'];
-                    redirect('users/account/');
+
+
+                    redirect('users/account/', $data);
 
                 } catch (Exception $ex) {
                     $response = $ex->getResponse();
@@ -197,11 +261,6 @@ class Users extends CI_Controller
             $this->form_validation->set_rules('physicianid', 'physicianid', 'required');
             $this->form_validation->set_rules('password', 'password', 'required');
             $this->form_validation->set_rules('conf_password', 'confirm password', 'required|matches[password]');
-            // $this->form_validation->set_rules('address1', 'address', 'required');
-            // $this->form_validation->set_rules('phone', 'phone', 'required');
-            // $this->form_validation->set_rules('zip', 'zip', 'required');
-            // $this->form_validation->set_rules('city', 'city', 'required');
-            // $this->form_validation->set_rules('country', 'country', 'required');
 
             $userDetails = array (
                 'externalReferenceId' => strip_tags($this->input->post('email')),
@@ -214,51 +273,10 @@ class Users extends CI_Controller
                 'currency'=> 'USD'
             );
 
-            // $billingDetails =  array(
-            //     "nickName" => 'Default Address',
-            //     "isDefault"=> "true",
-            //     "firstName"=> strip_tags($this->input->post('firstName')),
-            //     "lastName"=> strip_tags($this->input->post('lastName')),
-            //     "line1"=> strip_tags($this->input->post('address1')),
-            //     "line2"=> strip_tags($this->input->post('address2')),
-            //     "city"=> strip_tags($this->input->post('city')),
-            //     "country"=> 'US',
-            //     "postalCode"=> strip_tags($this->input->post('zip')),
-            //     "countryName"=> strip_tags($this->input->post('country')),
-            //     "phoneNumber"=> strip_tags($this->input->post('phone'))
-            // );
-
-            // $paymentDetails = array();
-
             if($this->form_validation->run() == true)
             {
                 try {
                     $newShopper = $shopperService->createShopper( $userDetails );
-
-                    // $getFullAccessToken = $authService->getFullAccessToken(
-                    //     $userDetails['emailAddress'], $userDetails['password'], $drSessionToken);
-
-                    // // Set shoppers billing address
-                    // $shopperAddress = $shopperService->updateShopperAddress(
-                    //     $getFullAccessToken['access_token'], $billingDetails);
-                    
-                    // $billingAddressArray = $shopperService->getShopperAddress($getFullAccessToken['access_token']);
-                    // $billingID = $billingAddressArray['addresses']['address'][0]['id'];
-                    // Create shopper payment
-                    // $paymentDetails = array(
-                    //     "nickName"  => 'Default Payment',
-                    //     "isDefault" => 'true',
-                    //     "sourceId"  => $sourceId 
-                    // );
-                    // $shopperService->updateShopperPayment(
-                    //     $getFullAccessToken['access_token'], $paymentDetails );
-                    // $shopperPaymentArray = $shopperService->getShopperPayments($getFullAccessToken['access_token']);
-                    // $paymentID = $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'];
-
-                    // Set shoppers session
-                    // $this->session->set_userdata(
-                    //     'access_token', $getFullAccessToken['access_token']
-                    // );
 
                     $this->session->set_userdata(
                         'dr_session_token', $drSessionToken
@@ -278,7 +296,7 @@ class Users extends CI_Controller
                     
                     // var_dump($newShopper, $data, $this->session);
                     // exit;
-                    redirect('users/login');
+                    redirect('users/login', $data);
                 } catch ( Exception  $e) {
                     $response = $e->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());

@@ -8,9 +8,6 @@
   </div>
   <div class="container white-bg">
     <div class="content-wrapper">
-        <h2 class="section-heading">User Information</h2>
-        <a class="pull-right" href="/users/logout">Logout</a>
-        <div class="sec-divider"></div>
         <?php
         if(!empty($success_msg)){
           echo '<div class="alert alert-success" role="alert">'.$success_msg.'</div>';
@@ -18,6 +15,10 @@
           echo '<div class="alert alert-danger" role="alert">'.$error_msg.'</div>';
         }
         ?>
+
+        <h2 class="section-heading">User Information</h2>
+        <a class="pull-right" href="/users/logout">Logout</a>
+        <div class="sec-divider"></div>
         <div class="form-wrapper">
           <form action="" method="post">
             <div class="row">
@@ -33,14 +34,23 @@
                 <div class="col-md-6 col-lg-6 col-12">
                   <div class="form-group">
                     <div class="row">
+                      <div class="col-12">
+                        <label for="">Company Name*</label>
+                        <input type="text" class="form-control" name="companyName" placeholder="Company Name" required="" value="<?php echo !empty($companyName)?$companyName:''; ?>">
+                      <?php echo form_error('companyName','<span class="help-block">','</span>'); ?>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="row">
                       <div class="col-md-6">
                         <label for="">First Name*</label>
-                        <input type="text" class="form-control" name="firstName" placeholder="First Name" required="" value="<?php echo !empty($user['firstName'])?$user['firstName']:''; ?>">
+                        <input type="text" class="form-control" name="firstName" placeholder="First Name" required="" value="<?php echo !empty($firstName)?$firstName:''; ?>">
                     <?php echo form_error('firstname','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
                         <label for="">Last Name*</label>
-                        <input type="text" class="form-control" name="lastName" placeholder="Last Name" required="" value="<?php echo !empty($user['lastName'])?$user['lastName']:''; ?>">
+                        <input type="text" class="form-control" name="lastName" placeholder="Last Name" required="" value="<?php echo !empty($lastName)?$lastName:''; ?>">
                       <?php echo form_error('lastname','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>
@@ -50,7 +60,7 @@
                       <div class="col-md-12">
                         <label for="">Email*</label>
                         <p>For multiple email addresses, separate with a comma.</p>
-                        <textarea type="email" class="form-control" name="email" placeholder="Email" required="" ><?php echo !empty($user['email'])?$user['email']:''; ?></textarea>
+                        <textarea type="email" class="form-control" name="email" placeholder="Email" required="" ><?php echo !empty($emailAddress)?$emailAddress:''; ?></textarea>
                     <?php echo form_error('email','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>
@@ -59,7 +69,7 @@
                     <div class="row">
                       <div class="col-md-12">
                         <label for="">EHR ID*</label>
-                        <input type="text" class="form-control" name="physicianId" placeholder="111-222-333-444" required="" value="<?php echo !empty($user['physicianId'])?$user['physicianId']:''; ?>">
+                        <input type="text" class="form-control" name="physicianId" placeholder="111-222-333-444" required="" value="<?php echo !empty($physicianId)?$physicianId:''; ?>">
                       <?php echo form_error('physicianid','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>
@@ -78,7 +88,7 @@
                     <div class="row">
                       <div class="col-md-6">
                         <label for="">Phone Number*</label>
-                        <input type="text" class="form-control" name="phone" placeholder="Phone" value="<?php echo !empty($user['phone'])?$user['phone']:''; ?>">
+                        <input type="text" class="form-control" name="phone" placeholder="Phone" value="<?php echo !empty($phone)?$phone:''; ?>">
                         <?php echo form_error('phone','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>
@@ -87,12 +97,12 @@
                     <div class="row">
                       <div class="col-md-6">
                         <label for="">Address 1*</label>
-                        <input type="text" class="form-control" name="address1" placeholder="Address Line 1" required="" value="<?php echo !empty($user['address1'])?$user['address1']:''; ?>">
+                        <input type="text" class="form-control" name="address1" placeholder="Address Line 1" required="" value="<?php echo !empty($address1)?$address1:''; ?>">
                         <?php echo form_error('address','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
                         <label for="">Address 2</label>
-                        <input type="text" class="form-control" name="address2" placeholder="Address Line 2" value="<?php echo !empty($user['address2'])?$user['address2']:''; ?>">
+                        <input type="text" class="form-control" name="address2" placeholder="Address Line 2" value="<?php echo !empty($address2)?$address2:''; ?>">
                       </div>
                     </div>
                   </div>
@@ -100,15 +110,15 @@
                     <div class="row">
                       <div class="col-md-6">
                         <label for="">Zip Code*</label>
-                        <input type="text" class="form-control" name="zip" placeholder="Zip/Postal Code" required="" value="<?php echo !empty($user['zip'])?$user['zip']:''; ?>">
+                        <input type="text" class="form-control" name="zip" placeholder="Zip/Postal Code" required="" value="<?php echo !empty($zip)?$zip:''; ?>">
                         <?php echo form_error('zip','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
                         <label for="">State*</label>
                         <select name="state" id="">
                           <option value="">Select State</option>
-                          <?php foreach ($stateCodes as $key => $state):?>
-                            <option value="<?php echo $key;?>"><?php echo $state; ?></option>
+                          <?php foreach ($stateCodes as $key => $_state):?>
+                            <option value="<?php echo $key;?>" <?php echo $state==$key?'selected':''; ?>><?php echo $_state; ?></option>
                           <?php endforeach; ?>
                         </select>
                         <?php echo form_error('state','<span class="help-block">','</span>'); ?>
@@ -119,7 +129,7 @@
                     <div class="row">
                       <div class="col-md-6">
                         <label for="">City</label>
-                        <input type="text" class="form-control" name="city" placeholder="City" required="" value="<?php echo !empty($user['city'])?$user['city']:''; ?>">
+                        <input type="text" class="form-control" name="city" placeholder="City" required="" value="<?php echo !empty($city)?$city:''; ?>">
                         <?php echo form_error('city','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
@@ -167,7 +177,7 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="">Cardholder's Full Name*</label>
-                          <input type="text" class="form-control" name="cardName" placeholder="John Doe" required="" value="<?php echo !empty($user['cardName'])?$user['cardName']:''; ?>">
+                          <input type="text" class="form-control" name="cardName" placeholder="John Doe" required="" value="<?php echo !empty($cardName)?$cardName:''; ?>">
                         <?php echo form_error('cardName','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
@@ -176,26 +186,64 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="">Card Number*</label>
-                          <input type="text" class="form-control" name="cardNumber" placeholder="" required="" value="<?php echo !empty($user['cardNumber'])?$user['cardNumber']:''; ?>">
+                          <input type="text" class="form-control" name="cardNumber" placeholder="" required="" value="<?php echo !empty($cardNumber)?$cardNumber:''; ?>">
                           <img class="card-img" src="<?php echo base_url(); ?>assets/images/visa.png" alt="">
                         <?php echo form_error('cardNumber','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group card-info">
                       <div class="row">
                         <div class="col-6">
                           <label for="">Exp. Date*</label>
-                          <select name="" id="" class="exp-date">
-
+                          <select name="cartExpDate" id="" class="exp-date">
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                            <option value="06">06</option>
+                            <option value="07">07</option>
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option value="31">31</option>
                           </select>
-                          <select name="" id="" class="exp-year">
-
+                          <span>/</span>
+                          <select name="cardExpYear" id="" class="exp-year">
+                            <option value="20">2020</option>
+                            <option value="21">2021</option>
+                            <option value="22">2022</option>
+                            <option value="23">2023</option>
+                            <option value="24">2024</option>
+                            <option value="25">2025</option>
+                            <option value="26">2026</option>
                           </select>
+                          <?php echo form_error('cardDates','<span class="help-block">','</span>'); ?>
                         </div>
                         <div class="col-6">
                           <label for="">CVC*</label>
-                          <input type="text" class="form-control" name="cardCvc" placeholder="" required="" value="<?php echo !empty($user['cardCvc'])?$user['cardCvc']:''; ?>">
+                          <input type="text" class="form-control" name="cardCvc" placeholder="" required="" value="<?php echo !empty($cardCvc)?$cardCvc:''; ?>">
                         <?php echo form_error('cardCvc','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
@@ -203,7 +251,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
-                          <label for="cardBilling">My billing address is different from the address above.</label>
+                          <label for="cardBilling" class="pl-2">My billing address is different from the address above.</label>
                           <input id="cardBilling" type="checkbox" name="cardBilling" >
                         </div>
                       </div>
@@ -211,7 +259,7 @@
                     <div class="form-group">
                       <div class="row">
                       <div class="col-12">
-                          <input type="submit" name="regisSubmit" class="btn btn-success" value="Save"/>
+                          <input type="submit" name="accountSubmit" class="btn btn-success" value="Save"/>
                         </div>
                       </div>
                     </div>

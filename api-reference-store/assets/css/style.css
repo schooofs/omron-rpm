@@ -95,7 +95,6 @@ footer img.pull-right {
     font-size: 16px;
     border: 1px solid #8c8c8c;
     border-radius: 0;
-    color: #adadad;
     max-width: 514px;
     width: 100%;
 }
@@ -116,4 +115,13 @@ footer img.pull-right {
     color: #2b3e50;
     padding-bottom: 20px;
     display: inline-block;
+}
+
+.form-wrapper input::placeholder {
+    color: #bebebe;
+    opacity: 1;
+}
+.form-wrapper textarea::placeholder {
+    color: #bebebe;
+    opacity: 1; 
 }

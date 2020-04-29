@@ -9,15 +9,15 @@
           <img src="<?php echo base_url(); ?>assets/images/vital-sight-logo.png" alt="vital-sight-logo">
           <h2 class="section-title">Welcome to VitalSight &#8482;
 </h2>
-        <?php
-        if(!empty($success_msg)){
-          echo '<div class="alert alert-success" role="alert">'.$success_msg.'</div>';
-        }elseif(!empty($error_msg)){
-          echo '<div class="alert alert-danger" role="alert">'.$error_msg.'</div>';
-        }
-        ?>
         <div class="form-wrapper">
           <p class="footInfo">Don't have an account? <a href="<?php echo base_url(); ?>users/registration">Register for one now</a></p>
+          <?php
+          if(!empty($success_msg)){
+            echo '<div class="alert alert-success" role="alert">'.$success_msg.'</div>';
+          }elseif(!empty($error_msg)){
+            echo '<div class="alert alert-danger" role="alert">'.$error_msg.'</div>';
+          }
+          ?>
           <form action="" method="post">
               <div class="form-group has-feedback">
                 <label for="">Email</label>

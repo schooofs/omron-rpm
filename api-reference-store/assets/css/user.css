@@ -21,3 +21,30 @@
     top: 36px;
     right: 21px;
 }
+
+.card-info label {
+    display: block;
+}
+
+.card-info select {
+    display: inline;
+    width: auto;
+    min-width: auto;
+}
+
+.card-info span {
+    padding: 0 20px;
+}
+
+.card-info input {
+    max-width: 100px;
+}
+
+#cardBilling {
+    position: absolute;
+    left: 0;
+    width: 20px;
+    padding: 0;
+    margin: 0;
+    height: 28px;
+}
