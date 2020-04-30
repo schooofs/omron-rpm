@@ -22,15 +22,14 @@ class Migration_001_add_users extends CI_Migration {
                     'auto_increment' => true
                 ),
                 'physician_id' => array(
-                    'type' => 'INT',
-                    'constraint' => 5,
-                    'unsigned' => true,
+                    'type' => 'BIGINT',
+                    'null' => true,
                 ),
                 'gc_reference' => array(
                     'type' => 'TEXT',
                     'null' => true,
                 ),
-                'email' => array(
+                'username' => array(
                     'type' => 'TEXT',
                     'null' => true,
                 ),

@@ -44,16 +44,20 @@ class Users extends CI_Controller
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         // $cartService =  new Digitalriver\Service\Cart($this->_client);
 
-        // var_dump($authService);
-        // exit;
         if ( $this->session->userdata( 'access_token' ) != '' ){
             $tokenInformation = $authService->getTokenInformation($this->session->userdata( 'access_token'));
 
             if ($tokenInformation['authenticated'] !== 'true') {
                 redirect('users/login');
             }
-
+            
             $fullAccessToken = $this->session->userdata( 'access_token' );
+
+            $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username='".$this->session->userdata('user_login')."';");
+            foreach ($query->result() as $row) {
+                $data['physicianId'] = $row->physician_id;
+                break;
+            }
 
             // Get the shopper data
             $getShopperData = $shopperService->getShopperData($fullAccessToken);
@@ -69,10 +73,10 @@ class Users extends CI_Controller
                 $data['lastName'] = 'set_new';
                 $data['emailAddress'] = 'set_new';
             }
-
+            
             // Get the shoppers addresses
             $getShoopperAddress = $shopperService->getShopperAddress($fullAccessToken);
-
+            
             if(isset($getShoopperAddress['addresses']['address'])) {
                 $data['companyName'] = $getShoopperAddress['addresses']['address'][0]['companyName'];
                 $data['address1'] = $getShoopperAddress['addresses']['address'][0]['line1'];
@@ -96,6 +100,8 @@ class Users extends CI_Controller
             $data['stateCodes'] = $this->get_states();
 
             if($this->input->post('accountSubmit')) {
+                // var_dump(strip_tags($this->input->post('physicianId')));
+                // exit;
                 $this->form_validation->set_rules('firstName', 'firstname', 'required');
                 $this->form_validation->set_rules('lastName', 'lastName', 'required');
                 $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
@@ -130,6 +136,23 @@ class Users extends CI_Controller
                     'phoneNumber'=> strip_tags($this->input->post('phone')),
                     'countrySubdivision' => strip_tags($this->input->post('state')),
                 );
+
+                $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
+
+                $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+
+                foreach ($query->result() as $row) {
+                    if (intval($row->physician_id) === intval($physicianId)) {
+                        $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
+                        redirect('users/account');
+                    }
+                }
+
+                $userLocalData = array(
+                    'physician_id' => intval($physicianId),
+                );
+
+                $this->db->update('ci_users', $userLocalData, array('username' => $this->session->userdata('user_login')));
 
                 //Set shoppers billing address
                 $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
@@ -182,8 +205,8 @@ class Users extends CI_Controller
         {
             $data['user_login'] = $this->session->userdata('user_login');
         }
-        if($this->input->post('loginSubmit'))
-        {
+
+        if($this->input->post('loginSubmit')) {
             $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
             $this->form_validation->set_rules('password', 'password', 'required');
 
@@ -252,13 +275,24 @@ class Users extends CI_Controller
         $userDetails = array();
         $data = array();
 
+        if($this->session->userdata('success_msg'))
+        {
+            $data['success_msg'] = $this->session->userdata('success_msg');
+            $this->session->unset_userdata('success_msg');
+        }
+        if($this->session->userdata('error_msg'))
+        {
+            $data['error_msg'] = $this->session->userdata('error_msg');
+            $this->session->unset_userdata('error_msg');
+        }
+
         if($this->input->post('regisSubmit'))
         {
 
             $this->form_validation->set_rules('firstName', 'firstname', 'required');
             $this->form_validation->set_rules('lastName', 'lastName', 'required');
             $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-            $this->form_validation->set_rules('physicianid', 'physicianid', 'required');
+            $this->form_validation->set_rules('physicianId', 'physicianId', 'required');
             $this->form_validation->set_rules('password', 'password', 'required');
             $this->form_validation->set_rules('conf_password', 'confirm password', 'required|matches[password]');
 
@@ -273,9 +307,27 @@ class Users extends CI_Controller
                 'currency'=> 'USD'
             );
 
-            if($this->form_validation->run() == true)
-            {
+            if($this->form_validation->run() == true) {
                 try {
+                    $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+
+                    $query = $this->db->query("SELECT `physician_id` FROM `ci_users`;");
+
+                    foreach ($query->result() as $row) {
+                        if (intval($row->physician_id) === intval($physicianId)) {
+                            $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
+                            redirect('users/registration', $data);
+                        }
+                    }
+                    
+                    $userLocalData = array(
+                        'physician_id' => intval($physicianId),
+                        'username'  => $userDetails['emailAddress'],
+                        'gc_reference'  => $userDetails['emailAddress']
+                    );
+
+                    $this->db->insert('ci_users',$userLocalData);
+
                     $newShopper = $shopperService->createShopper( $userDetails );
 
                     $this->session->set_userdata(
@@ -285,17 +337,12 @@ class Users extends CI_Controller
                         'user_login', $userDetails['emailAddress']
                     );
 
-                    $this->db->insert('ci_users', array(
-                        'gc_reference'  => $userDetails['emailAddress'],
-                        'email'         => $userDetails['emailAddress'],
-                        'physician_id'  => strip_tags($this->input->post('physicianId')),
-                    ));
+
 
                     $data['status'] = 'ok';
                     $this->session->set_userdata('success_msg', 'Your registration was successfully. Please login to your account.');
                     
-                    // var_dump($newShopper, $data, $this->session);
-                    // exit;
+
                     redirect('users/login', $data);
                 } catch ( Exception  $e) {
                     $response = $e->getResponse();
@@ -332,6 +379,18 @@ class Users extends CI_Controller
 
     public function get_states() {
         return array('AL'=>"Alabama",  'AK'=>"Alaska",  'AZ'=>"Arizona",  'AR'=>"Arkansas",  'CA'=>"California",  'CO'=>"Colorado",  'CT'=>"Connecticut",  'DE'=>"Delaware",  'DC'=>"District Of Columbia",  'FL'=>"Florida",  'GA'=>"Georgia",  'HI'=>"Hawaii",  'ID'=>"Idaho",  'IL'=>"Illinois",  'IN'=>"Indiana",  'IA'=>"Iowa",  'KS'=>"Kansas",  'KY'=>"Kentucky",  'LA'=>"Louisiana",  'ME'=>"Maine",  'MD'=>"Maryland",  'MA'=>"Massachusetts",  'MI'=>"Michigan",  'MN'=>"Minnesota",  'MS'=>"Mississippi",  'MO'=>"Missouri",  'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",  'OK'=>"Oklahoma",  'OR'=>"Oregon",  'PA'=>"Pennsylvania",  'RI'=>"Rhode Island",  'SC'=>"South Carolina",  'SD'=>"South Dakota",'TN'=>"Tennessee",  'TX'=>"Texas",  'UT'=>"Utah",  'VT'=>"Vermont",  'VA'=>"Virginia",  'WA'=>"Washington",  'WV'=>"West Virginia",  'WI'=>"Wisconsin",  'WY'=>"Wyoming");
+    }
+
+
+    //testing purposes
+    public function listdata()
+    {
+        echo 'Redox Data Models';
+		$query = $this->db->query("SELECT `data` FROM `ci_data_models`;");
+
+		foreach ($query->result() as $row) {
+			print_r(unserialize($row->data));
+		}
     }
 
 }

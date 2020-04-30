@@ -20,7 +20,8 @@ class Migration_ci_data_models extends CI_Migration {
 				'auto_increment' => true
 			),
 			'data' => array(
-				'type' => 'JSON',
+				'type' => 'VARCHAR',
+				'constraint' => '225',
 				'null' => true,
 			),
 		));

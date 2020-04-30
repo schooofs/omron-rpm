@@ -33,10 +33,26 @@ class Api extends RestController {
 
     public function physicians_post()
     {
-		var_dump($this->input);
-		// $this->response( [
-		// 	'status' => true,
-		// 	'message' => 'Success'
-		// ], 200 );
-    }
+		$data_model = json_decode($this->input->raw_input_stream, true);
+
+		if(!empty($data_model)) {
+
+			$data = array(
+				'data' => serialize($data_model)
+			);
+
+			$this->db->insert('ci_data_models', $data);
+
+			$this->response( [
+				'status' => true,
+				'message' => 'success'
+			], 400 );
+		} else {
+
+			$this->response( [
+				'status' => false,
+				'message' => 'No data was found.'
+			], 400 );
+		}
+	}
 }
