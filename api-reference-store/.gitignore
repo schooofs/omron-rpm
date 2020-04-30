@@ -1,6 +1,9 @@
 .DS_Store
 
 application/cache/*
+application/config/config.php
+application/config/database.php
+
 !application/cache/index.html
 
 application/logs/*
@@ -15,6 +18,7 @@ user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 /vendor/
+
 
 # IDE Files
 #-------------------------
