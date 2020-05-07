@@ -79,7 +79,7 @@ $db['default'] = array(
     'username' => 'vitalsight',
     'password' => 'K12-_llIzHKNoB4TRdCw',
     'database' => 'wp_vitalsight',
-    'dbdriver' => 'mysql',
+    'dbdriver' => 'mysqli',
     'dbprefix' => '',
     'pconnect' => FALSE,
     'db_debug' => (ENVIRONMENT !== 'production'),
