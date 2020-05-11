@@ -51,7 +51,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -91,7 +91,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -132,7 +132,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];

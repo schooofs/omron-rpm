@@ -193,7 +193,7 @@ class Cart extends \Digitalriver\Service {
             $url .= '&'.$queryParm;
         }
         
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
