@@ -530,7 +530,7 @@ $config['proxy_ips'] = '';
  */
 
 $config['application_name']             = 'VitalSight';
-$config['site_id']                      = 'drdod19';
+$config['site_id']                      = 'omronrpm';
 $config['api_key']                      = '3c923041294d428e98ddde1d5805b392';
 // $config['privateApiKey']                = 'ac96b8dd0ad74e6485e9d5549b4b750a';
 $config['secretKey']                    = '92fe007e91c5466cae3a3c0688b64d4a';

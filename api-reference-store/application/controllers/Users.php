@@ -327,9 +327,9 @@ class Users extends CI_Controller
                         'gc_reference'  => $userDetails['emailAddress']
                     );
 
-                    $this->db->insert('ci_users',$userLocalData);
-
                     $newShopper = $shopperService->createShopper( $userDetails );
+
+                    $this->db->insert('ci_users',$userLocalData);
 
                     $this->session->set_userdata(
                         'dr_session_token', $drSessionToken
@@ -338,11 +338,8 @@ class Users extends CI_Controller
                         'user_login', $userDetails['emailAddress']
                     );
 
-
-
                     $data['status'] = 'ok';
                     $this->session->set_userdata('success_msg', 'Your registration was successfully. Please login to your account.');
-                    
 
                     redirect('users/login', $data);
                 } catch ( Exception  $e) {
