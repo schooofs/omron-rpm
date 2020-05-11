@@ -204,6 +204,7 @@ class Users extends CI_Controller
         if($this->session->userdata('user_login'))
         {
             $data['user_login'] = $this->session->userdata('user_login');
+            $this->session->unset_userdata('user_login');
         }
 
         if($this->input->post('loginSubmit')) {
@@ -370,11 +371,12 @@ class Users extends CI_Controller
      */
     public function logout()
     {
+        $data = array();
         $this->session->unset_userdata('dr_session_token');
         $this->session->unset_userdata('access_token');
         $this->session->unset_userdata('refresh_token');
         $this->session->sess_destroy();
-        redirect('users/login/');
+        redirect('users/login/', $data);
     }
 
     public function get_states() {
@@ -388,9 +390,11 @@ class Users extends CI_Controller
         echo 'Redox Data Models';
 		$query = $this->db->query("SELECT `data` FROM `ci_data_models`;");
 
-		foreach ($query->result() as $row) {
-			print_r(unserialize($row->data));
-		}
+        foreach ($query->result() as $row) {
+            $fromDatabase = json_decode($row->data, true);
+
+            var_dump($fromDatabase);
+        }
     }
 
 }

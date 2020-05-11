@@ -529,27 +529,13 @@ $config['proxy_ips'] = '';
  *  -------------------------------------------------
  */
 
-$config['application_name']             = 'DR Demo';
+$config['application_name']             = 'VitalSight';
 $config['site_id']                      = 'drdod19';
-$config['api_key']                      = '5b3cbb55681c48bab419e17c8b52b7d7';
-$config['privateApiKey']                = 'ac96b8dd0ad74e6485e9d5549b4b750a';
-$config['secretKey']                    = '5b2333960edc4e868221eaf8aa18f272';
+$config['api_key']                      = '3c923041294d428e98ddde1d5805b392';
+// $config['privateApiKey']                = 'ac96b8dd0ad74e6485e9d5549b4b750a';
+$config['secretKey']                    = '92fe007e91c5466cae3a3c0688b64d4a';
 $config['environment']                  = 'production';
 $config['api_version']                  = 'v1';
-$config['product_id1']                  = '5102133700';
 $config['test_order']                   = 'true';
-$config['recommonded_prod']             = '62916334201';
-$config['home_offer_electronics']       = '59442374201';
-$config['home_offer_software']          = '59442374401';
-$config['home_offer_games']             = '59442374601';
-$config['future_product']               = '59442374801';
-$config['home_offer_upgrade']           = '59442375601';
-$config['home_special_offer']           = '59442375801';
-$config['category_page_offer']          = array(
-    'Software' => 59442375401,
-    'Games & Entertainment' => 59442375201,
-    'Electronics' => 59442375001
-);
 $config['display_api_console']          = 'true';
 $config['destination_token']            = 'VGMO1dlw9SYndmMcqIMC';
-

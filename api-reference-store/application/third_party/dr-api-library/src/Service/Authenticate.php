@@ -53,7 +53,7 @@ class Authenticate extends \Digitalriver\Service {
         
         $form_data = array();
          
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -76,7 +76,7 @@ class Authenticate extends \Digitalriver\Service {
         
         $form_data = array();
         
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('api_key').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
