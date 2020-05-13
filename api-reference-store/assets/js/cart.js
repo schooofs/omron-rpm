@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var digitalriverjs = new DigitalRiver('6d9b6cf6592d4410bff8722fc8cbd50c');
+    var digitalriverjs = new DigitalRiver('pk_c1a984305e6e4d2a88fda776629c3acc');
     var options = {
         classes: {
             base: "DRElement",
@@ -254,32 +254,32 @@ $(document).ready(function(){
             }
         });
     });
-    $(document).on("click", "#userLogin" , function() {
-        $('form[name="user_login"]').validate({
-            rules: {
-                user_email: {
-                    required: true,
-                    email: true
-                },
-                user_pass : {
-                    required: true
-                }
-            },
-            submitHandler: function() {
-                userLogin();
-                return false;
-            },
-            messages: {
-                user_email: {
-                    required: "Enter the Email Address",
-                    email: "Invalid Email Address"
-                },        
-                user_pass: {
-                    required: "Enter the password"
-                }
-            }
-        });
-    });
+    // $(document).on("click", "#userLogin" , function() {
+    //     $('form[name="user_login"]').validate({
+    //         rules: {
+    //             user_email: {
+    //                 required: true,
+    //                 email: true
+    //             },
+    //             user_pass : {
+    //                 required: true
+    //             }
+    //         },
+    //         submitHandler: function() {
+    //             userLogin();
+    //             return false;
+    //         },
+    //         messages: {
+    //             user_email: {
+    //                 required: "Enter the Email Address",
+    //                 email: "Invalid Email Address"
+    //             },        
+    //             user_pass: {
+    //                 required: "Enter the password"
+    //             }
+    //         }
+    //     });
+    // });
     $(document).on("click", "#forgot_pass_btn" , function() {
         $('form[name="forgot_pass"]').validate({
             rules: {

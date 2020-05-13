@@ -18,7 +18,7 @@ class Users extends CI_Controller
         $this->_client->setApiVersion($this->config->item('api_version'));
         $this->_client->setEnvironment($this->config->item('environment'));
         $this->_client->setTestOrder($this->config->item('test_order'));
-        $this->_client->setPrivateApiKey($this->config->item('privateApiKey'));
+        // $this->_client->setPrivateApiKey($this->config->item('privateApiKey'));
         $this->_client->setSecretKey($this->config->item('secretKey'));
     }
     
@@ -51,6 +51,8 @@ class Users extends CI_Controller
                 redirect('users/login');
             }
             
+            $data['stateCodes'] = $this->get_states();
+
             $fullAccessToken = $this->session->userdata( 'access_token' );
 
             $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username='".$this->session->userdata('user_login')."';");
@@ -96,8 +98,6 @@ class Users extends CI_Controller
             } else {
                 $data['paymentInfo'] = 'set_new';
             }
-
-            $data['stateCodes'] = $this->get_states();
 
             if($this->input->post('accountSubmit')) {
                 // var_dump(strip_tags($this->input->post('physicianId')));
@@ -204,7 +204,7 @@ class Users extends CI_Controller
         if($this->session->userdata('user_login'))
         {
             $data['user_login'] = $this->session->userdata('user_login');
-            $this->session->unset_userdata('user_login');
+            // $this->session->unset_userdata('user_login');
         }
 
         if($this->input->post('loginSubmit')) {
@@ -216,8 +216,10 @@ class Users extends CI_Controller
                 $authService =  new Digitalriver\Service\Authenticate($this->_client);
                 $authDrData = $authService->getDrSessionToken();
                 $drSessionToken = $authDrData['session_token'];
-                // $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+                $shopperService =  new Digitalriver\Service\Shopper($this->_client);
 
+                // var_dump($this->input->post('email'), $this->input->post('password'), $drSessionToken);
+                // exit;
                 try {
                     $getFullAccessToken = $authService->getFullAccessToken(
                         $this->input->post('email'), $this->input->post('password'), $drSessionToken);
@@ -270,8 +272,11 @@ class Users extends CI_Controller
     {
         $shopperService =  new Digitalriver\Service\Shopper($this->_client);
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
+        $cartService =  new Digitalriver\Service\Cart($this->_client);
+
         $authDrData = $authService->getDrSessionToken();
         $drSessionToken = $authDrData['session_token'];
+        $limitedToken = $authService->getLimitedOauthToken($drSessionToken);
 
         $userDetails = array();
         $data = array();
@@ -320,21 +325,19 @@ class Users extends CI_Controller
                             redirect('users/registration', $data);
                         }
                     }
-                    
+
+                    $newShopper = $shopperService->createShopper( $userDetails, $limitedToken['access_token'] );
+
                     $userLocalData = array(
                         'physician_id' => intval($physicianId),
                         'username'  => $userDetails['emailAddress'],
                         'gc_reference'  => $userDetails['emailAddress']
                     );
 
-                    $newShopper = $shopperService->createShopper( $userDetails );
-
                     $this->db->insert('ci_users',$userLocalData);
 
                     $this->session->set_userdata(
-                        'dr_session_token', $drSessionToken
-                    );
-                    $this->session->set_userdata(
+                        'dr_session_token', $drSessionToken,
                         'user_login', $userDetails['emailAddress']
                     );
 
@@ -346,7 +349,7 @@ class Users extends CI_Controller
                     $response = $e->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());
                     $data['status'] = 'error';
-                    $data['error_msg'] = $responseBodyAsString->errors->error[0]->description;
+                    $data['error_msg'] = $responseBodyAsString->error_description;
                 }
             }
             else

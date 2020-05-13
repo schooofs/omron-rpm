@@ -18,6 +18,7 @@
     <script src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
     <script src="<?php echo base_url();?>assets/js/popper.min.js"></script>
     <script src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+    <script src="<?php echo base_url();?>assets/js/cart.js"></script>
     <script type="text/javascript" src="//drh.img.digitalriver.com/DRHM/Storefront/Library/scripts/jquery/plugins/jquery.validate.js"></script>
     <script type="text/javascript" src="//drh.img.digitalriver.com/DRHM/Storefront/Library/scripts/jquery/plugins/jquery.additional-methods.js"></script>
     <script src="<?php echo base_url(); ?>assets/js/common.js"></script>

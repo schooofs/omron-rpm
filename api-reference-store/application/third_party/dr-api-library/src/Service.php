@@ -44,7 +44,7 @@ class Service
     protected function postJsonRequest($url, $data, $headers=array() ) {
         $response = $this->httpClient->post($url, [
                 'json' => $data,
-                'headers' => [$headers]
+                'headers' => $headers
             ]
         );
 

@@ -125,3 +125,18 @@ footer img.pull-right {
     color: #bebebe;
     opacity: 1; 
 }
+.form-wrapper .help-block {
+    color: red;
+}
+
+#card-number, #card-expiration, #card-cvv{
+    font-size: 16px;
+    padding: 7px 10px;
+    height: 48px;
+    border: 1px solid #8c8c8c;
+    border-radius: 0;
+    background-color: #ffffff;
+    font-family: Gotham;
+    max-width: 514px;
+    width: 100%;
+}

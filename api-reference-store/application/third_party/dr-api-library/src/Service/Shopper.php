@@ -26,15 +26,18 @@ class Shopper extends \Digitalriver\Service {
      * Creates a shopper record
      * Required Access Token and user field array as input 
     */
-    public function createShopper( $userDetails = array()) {
+    public function createShopper( $userDetails = array(), $token) {
         if ( !$userDetails ) {
             throw new \Exception("Shopper Details Missing");
         }
         $url = $this->client->getConfig()->get('shoppersUrl').'?apiKey='.$this->client->getConfig()->get('apiKey').'&format=json';
         $jsonData = [ 'shopper' => $userDetails ];
-        $headers = array(
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json'
-        );
+        ];
+
         return  $this->postJsonRequest($url, $jsonData, $headers); 
     }
     
@@ -51,7 +54,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -91,7 +94,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -132,7 +135,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];

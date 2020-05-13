@@ -118,7 +118,7 @@
                         <select name="state" id="">
                           <option value="">Select State</option>
                           <?php foreach ($stateCodes as $key => $_state):?>
-                            <option value="<?php echo $key;?>" <?php echo $state==$key?'selected':''; ?>><?php echo $_state; ?></option>
+                            <option value="<?php echo $key; ?>" <?php echo (!empty($state) && $state==$key) ? 'selected' : ''; ?> ><?php echo $_state; ?></option>
                           <?php endforeach; ?>
                         </select>
                         <?php echo form_error('state','<span class="help-block">','</span>'); ?>
@@ -173,7 +173,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                       <div class="row">
                         <div class="col-12">
                           <label for="">Cardholder's Full Name*</label>
@@ -181,8 +181,8 @@
                         <?php echo form_error('cardName','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
-                    </div>
-                    <div class="form-group">
+                    </div> -->
+                    <!-- <div class="form-group">
                       <div class="row">
                         <div class="col-12">
                           <label for="">Card Number*</label>
@@ -191,8 +191,8 @@
                         <?php echo form_error('cardNumber','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
-                    </div>
-                    <div class="form-group card-info">
+                    </div> -->
+                    <!-- <div class="form-group card-info">
                       <div class="row">
                         <div class="col-6">
                           <label for="">Exp. Date*</label>
@@ -247,7 +247,60 @@
                         <?php echo form_error('cardCvc','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
+                    </div> -->
+                    <div class="form-group"  id="user_payment_option">
+                      <div class="row">
+                        <div class="col-12">
+                          <label for="paymentOption" class="label-txt">Saved Payment Option:</span></label>
+                          <select class="selectBox" name="paymentOption" id="paymentOption"></select>
+                        </div>
+                      </div>
                     </div>
+                    <div class="form-group" id="user_payment_name">
+                      <div class="row">
+                        <div class="col-12">
+                          <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
+                          <input type="text" class="selectBox" name="paymentOptionName" id="paymentOptionName" >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-number" class="label-txt">Credit Card Number*</span></label>
+                        <div id="card-number"></div>
+                        <input type="text" class="selectBox" style="display:none;" 
+                                id="cardLastDigit" readonly="true" />
+                        <span id="cardNumberError" class="error"></span>
+                    </div>
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-6">
+                          <label for="">Exp. Date*</label>
+                          <div id="card-expiration"></div>
+                          <input type="text" class="selectBox" style="display:none;" 
+                                id="cardExpire" readonly="true" />
+                          <span id="cardExpirationError" class="error"></span>
+                        </div>
+                        <div class="col-6">
+                          <label for="">CVC*</label>
+                          <div id="card-cvv"></div>
+                          <input type="text" class="selectBox" name="cardCvv" id="cardCvv" style="display:none;" />
+                          <span id="cardSecurityError" class="error"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="card-expiration" class="label-txt">Credit Card Expiration*</span></label>
+                        <div id="card-expiration"></div>
+                          <input type="text" class="selectBox" style="display:none;" 
+                                id="cardExpire" readonly="true" />
+                        <span id="cardExpirationError" class="error"></span>
+                    </div>
+                    <div class="form-group" id="card_cvv_wrap">
+                        <label for="card-cvv" class="label-txt">Credit Card CVV*</span></label>
+                        <div id="card-cvv"></div>
+                          <input type="text" class="selectBox" name="cardCvv" id="cardCvv"  />
+                        <span id="cardSecurityError" class="error"></span>
+                    </div> -->
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
@@ -256,6 +309,32 @@
                         </div>
                       </div>
                     </div>
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-12">
+                          <p>As the person creating this account, you represent and warrant that you have the authority to provide the information required and to create the account. If you do not have the appropriate authority and/or cannot provide the required information, please exit this form now. If you have the appropriate authority and can provide the required information, please click on the check box below and click on the "I agree" button.</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-12">
+                          <label for="agreeAcc" class="pl-2">Yes, I have the appropriate authority to create this account and certify that the answers provided are true and accurate. I agree to comply with all terms in my Company’s agreements with VitalSight. I understand that failure to comply with all of the terms in these agreements will result in suspension or termination of my account.</label>
+                          <input id="agreeAcc" type="checkbox" name="agreeAcc" >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-12">
+                          <label for="agreeTerms" class="pl-2">By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
+                          <input id="agreeTerms" type="checkbox" name="agreeTerms" >
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <div class="row">
                       <div class="col-12">

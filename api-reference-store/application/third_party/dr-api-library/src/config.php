@@ -5,7 +5,7 @@ class Config  {
     const ENDPOINT_DEV = "https://api.digitalriver.com/";
     const ENDPOINT_LIVE = "https://api.digitalriver.com/";
     
-    const ENDPOINT_ADMIN_DEV = "https://drhadmin.digitalriver.com/";
+    const ENDPOINT_ADMIN_DEV = "https://store.digitalriver.com/";
     const ENDPOINT_STORE = "https://store.digitalriver.com/";
     const ENDPOINT_OAUTH = "https://api.digitalriver.com/";
     const API_VERSION = "v1";
@@ -49,7 +49,9 @@ class Config  {
     private function staging(){
         ini_set('display_errors', '1');
         ini_set('error_reporting', E_ALL);
-        define('WEB_ROOT', '/');
+        if (!defined('WEB_ROOT')) {
+            define('WEB_ROOT', '/');
+        }
         $apiVersion = $this->get('apiVersion') ? $this->get('apiVersion') :  self::API_VERSION;
         $this->set('categoriesUrl', self::ENDPOINT_DEV . $apiVersion . '/shoppers/me/categories');
         $this->set('shoppersUrl', self::ENDPOINT_DEV . $apiVersion. "/shoppers");
@@ -69,7 +71,9 @@ class Config  {
     private function production(){
         ini_set('display_errors', '1');
         ini_set('error_reporting', E_ALL);
-        define('WEB_ROOT', '/');
+        if (!defined('WEB_ROOT')) {
+            define('WEB_ROOT', '/');
+        }
         $apiVersion = $this->get('apiVersion') ? $this->get('apiVersion') :  self::API_VERSION;
         $this->set('categoriesUrl', self::ENDPOINT_DEV . $apiVersion . '/shoppers/me/categories');
         $this->set('shoppersUrl', self::ENDPOINT_DEV . $apiVersion. "/shoppers");

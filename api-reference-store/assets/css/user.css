@@ -40,7 +40,7 @@
     max-width: 100px;
 }
 
-#cardBilling {
+#cardBilling, #agreeAcc, #agreeTerms {
     position: absolute;
     left: 0;
     width: 20px;

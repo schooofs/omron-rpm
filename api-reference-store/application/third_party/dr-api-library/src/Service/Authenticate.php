@@ -23,7 +23,7 @@ class Authenticate extends \Digitalriver\Service {
         $url = $this->client->getConfig()->get('AcccessTokenUrl').
                 $this->client->getConfig()->get('siteId') .'/SessionToken?apiKey='. 
                 $this->client->getConfig()->get('apiKey');
-        
+
         return  $this->getRequest($url);
     }
 
@@ -48,12 +48,12 @@ class Authenticate extends \Digitalriver\Service {
         if( !$drSessionToken ) {
             throw new \Exception("DR Session Token is missing");
         }
-        $url = $this->client->getConfig()->get('OauthEndpointUrl').'/token'
+        $url = $this->client->getConfig()->get('OauthEndpointUrl').'token'
                 . '?dr_session_token='.$drSessionToken.'&grant_type=password&format=json';
         
         $form_data = array();
          
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
@@ -76,7 +76,7 @@ class Authenticate extends \Digitalriver\Service {
         
         $form_data = array();
         
-        $apiKeyToken = base64_encode($this->client->getConfig()->get('privateApiKey').':'
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
             .$this->client->getConfig()->get('secretKey'));
         
         $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
