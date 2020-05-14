@@ -20,7 +20,7 @@
         <a class="pull-right" href="/users/logout">Logout</a>
         <div class="sec-divider"></div>
         <div class="form-wrapper">
-          <form action="" method="post">
+          <form action="" method="post" id="accountForm">
             <div class="row">
                 <div class="col-md-3 d-none d-sm-none d-md-block d-lg-block">
                   <div class="form-group">
@@ -98,7 +98,7 @@
                       <div class="col-md-6">
                         <label for="">Address 1*</label>
                         <input type="text" class="form-control" name="address1" placeholder="Address Line 1" required="" value="<?php echo !empty($address1)?$address1:''; ?>">
-                        <?php echo form_error('address','<span class="help-block">','</span>'); ?>
+                        <?php echo form_error('address1','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
                         <label for="">Address 2</label>
@@ -252,7 +252,9 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="paymentOption" class="label-txt">Saved Payment Option:</span></label>
-                          <select class="selectBox" name="paymentOption" id="paymentOption"></select>
+                          <select class="selectBox" name="paymentOption" id="paymentOption">
+                            <option value="create_new" selected>Create New</option>
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -260,7 +262,8 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
-                          <input type="text" class="selectBox" name="paymentOptionName" id="paymentOptionName" >
+                          <input type="text" class="selectBox" name="paymentOptionName" id="paymentOptionName" required>
+                          <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
                     </div>
@@ -321,7 +324,7 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="agreeAcc" class="pl-2">Yes, I have the appropriate authority to create this account and certify that the answers provided are true and accurate. I agree to comply with all terms in my Company’s agreements with VitalSight. I understand that failure to comply with all of the terms in these agreements will result in suspension or termination of my account.</label>
-                          <input id="agreeAcc" type="checkbox" name="agreeAcc" >
+                          <input id="agreeAcc" type="checkbox" name="agreeAcc" value="yes" required>
                         </div>
                       </div>
                     </div>
@@ -330,14 +333,14 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="agreeTerms" class="pl-2">By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
-                          <input id="agreeTerms" type="checkbox" name="agreeTerms" >
+                          <input id="agreeTerms" type="checkbox" name="agreeTerms" value="yes" required>
                         </div>
                       </div>
                     </div>
 
                     <div class="form-group">
                       <div class="row">
-                      <div class="col-12">
+                        <div class="col-12">
                           <input type="submit" name="accountSubmit" class="btn btn-success" value="Save"/>
                         </div>
                       </div>

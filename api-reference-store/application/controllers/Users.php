@@ -50,8 +50,6 @@ class Users extends CI_Controller
             if ($tokenInformation['authenticated'] !== 'true') {
                 redirect('users/login');
             }
-            
-            $data['stateCodes'] = $this->get_states();
 
             $fullAccessToken = $this->session->userdata( 'access_token' );
 
@@ -65,8 +63,6 @@ class Users extends CI_Controller
             $getShopperData = $shopperService->getShopperData($fullAccessToken);
             if ( isset($getShopperData['shopper']) )
             {
-                // var_dump($getShopperData['shopper']);
-                // exit;
                 $data['firstName'] = $getShopperData['shopper']['firstName'];
                 $data['lastName'] = $getShopperData['shopper']['lastName'];
                 $data['emailAddress'] = $getShopperData['shopper']['emailAddress'];
@@ -75,7 +71,7 @@ class Users extends CI_Controller
                 $data['lastName'] = 'set_new';
                 $data['emailAddress'] = 'set_new';
             }
-            
+
             // Get the shoppers addresses
             $getShoopperAddress = $shopperService->getShopperAddress($fullAccessToken);
             
@@ -94,23 +90,30 @@ class Users extends CI_Controller
             // var_dump($shopperPaymentArray);
             // exit;
             if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                $data['paymentInfo'] =  $shopperPaymentArray['paymentOptions']['paymentOption'];
+                $data['paymentInfo'] =  array(
+                    'paymentOptions' => $shopperPaymentArray['paymentOptions']['paymentOption']
+                );
             } else {
-                $data['paymentInfo'] = 'set_new';
+                $data['paymentInfo'] =  array(
+                    'paymentOptions' => ''
+                );
             }
 
+            $data['stateCodes'] = $this->get_states();
+
             if($this->input->post('accountSubmit')) {
-                // var_dump(strip_tags($this->input->post('physicianId')));
-                // exit;
+
                 $this->form_validation->set_rules('firstName', 'firstname', 'required');
                 $this->form_validation->set_rules('lastName', 'lastName', 'required');
                 $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
                 $this->form_validation->set_rules('physicianid', 'physicianid', 'required');
-                $this->form_validation->set_rules('address1', 'address', 'required');
+                $this->form_validation->set_rules('address1', 'address1', 'required');
                 $this->form_validation->set_rules('phone', 'phone', 'required');
                 $this->form_validation->set_rules('zip', 'zip', 'required');
                 $this->form_validation->set_rules('city', 'city', 'required');
                 $this->form_validation->set_rules('country', 'country', 'required');
+                $this->form_validation->set_rules('state', 'state', 'required');
+                $this->form_validation->set_rules('paymentOptionName', 'paymentOptionName', 'required');
 
                 $userDetails = array (
                     'emailAddress' => strip_tags($this->input->post('email')),
@@ -137,42 +140,78 @@ class Users extends CI_Controller
                     'countrySubdivision' => strip_tags($this->input->post('state')),
                 );
 
-                $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
+                try{
 
-                $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+                    $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
 
-                foreach ($query->result() as $row) {
-                    if (intval($row->physician_id) === intval($physicianId)) {
-                        $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
-                        redirect('users/account');
+                    $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+
+                    foreach ($query->result() as $row) {
+                        if (intval($row->physician_id) === intval($physicianId)) {
+                            $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
+                            redirect('users/account');
+                        }
                     }
+
+                    $userLocalData = array(
+                        'physician_id' => intval($physicianId),
+                    );
+
+                    $this->db->update('ci_users', $userLocalData, array('username' => $this->session->userdata('user_login')));
+
+                    //Set shoppers billing address
+                    $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
+
+                    $paymentDetails = array(
+                        'nickName'          => strip_tags($this->input->post('paymentOptionName')),
+                        'isDefault'         => 'true',
+                        'sourceId'          => strip_tags($this->input->post('paymentSourceId')),
+                    );
+
+                    // 'type'              => 'CreditCardMethod',
+                    // 'displayableNumber' =>  $paymentDetails['displayableNumber'],
+                    // "creditCard": {
+                    //   "expirationMonth": "5",
+                    //   "expirationYear": "2017",
+                    //   "displayableNumber": "************1111",
+                    //   "type": "visa",
+                    //   "displayName": "Visa"
+                    // }
+
+                    // var_dump($paymentDetails);
+                    // exit;
+
+                    // $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
+
+                    // $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
+                    // $paymentID = $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'];
+
+                    // var_dump($shopperPaymentArray);
+
+                    $data = array(
+                        'firstName'     => $userDetails['firstName'],
+                        'lastName'      => $userDetails['lastName'],
+                        'emailAddress'  => $userDetails['emailAddress'],
+                        'physicianId'   => $physicianId,
+                        'companyName'   => $billingDetails['companyName'],
+                        'address1'      => $billingDetails['line1'],
+                        'address2'      => $billingDetails['line2'],
+                        'phone'         => $billingDetails['phoneNumber'],
+                        'zip'           => $billingDetails['postalCode'],
+                        'city'          => $billingDetails['city'],
+                        'country'       => $billingDetails['country'],
+                        'state'         => $billingDetails['countrySubdivision'],
+                        'stateCodes'    => $this->get_states(),
+                        'paymentInfo'   => array(
+                        ),
+                    );
+                    
+                } catch (Exception $ex) {
+                    $response = $ex->getResponse();
+                    $responseBodyAsString = json_decode($response->getBody()->getContents());
+                    $data['status'] = 'error';
+                    $data['error_msg'] = $responseBodyAsString->errors->error[0]->description;
                 }
-
-                $userLocalData = array(
-                    'physician_id' => intval($physicianId),
-                );
-
-                $this->db->update('ci_users', $userLocalData, array('username' => $this->session->userdata('user_login')));
-
-                //Set shoppers billing address
-                $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
-                
-                // // Create shopper payment
-                //     $paymentDetails = array(
-                //     'displayableNumber'     => strip_tags($this->input->post('cardNumber')),
-                //     'expirationYear'        => strip_tags($this->input->post('cardNumber')),
-                // );
-                // $paymentDetails = array(
-                //     'nickName'          => 'Default Payment',
-                //     'isDefault'         => 'true',
-                //     'type'              => 'CreditCardMethod',
-                //     'displayableNumber' =>  $paymentDetails['displayableNumber'],
-
-                // );
-                // $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
-                // $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
-                // $paymentID = $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'];
-
             }
         }
         else
@@ -204,7 +243,7 @@ class Users extends CI_Controller
         if($this->session->userdata('user_login'))
         {
             $data['user_login'] = $this->session->userdata('user_login');
-            // $this->session->unset_userdata('user_login');
+            $this->session->unset_userdata('user_login');
         }
 
         if($this->input->post('loginSubmit')) {
@@ -250,7 +289,7 @@ class Users extends CI_Controller
                     $response = $ex->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());
                     $data['status'] = 'error';
-                    $data['error_msg'] = $responseBodyAsString->error_description;
+                    $data['error_msg'] = $responseBodyAsString->errors->error[0]->description;
                 }
                 
             }
@@ -336,20 +375,18 @@ class Users extends CI_Controller
 
                     $this->db->insert('ci_users',$userLocalData);
 
-                    $this->session->set_userdata(
-                        'dr_session_token', $drSessionToken,
-                        'user_login', $userDetails['emailAddress']
-                    );
+                    $this->session->set_userdata('dr_session_token', $drSessionToken);
+                    $this->session->set_userdata('user_login', $userDetails['emailAddress']);
 
                     $data['status'] = 'ok';
-                    $this->session->set_userdata('success_msg', 'Your registration was successfully. Please login to your account.');
+                    $this->session->set_userdata('success_msg', 'Your registration was successful. Please login to your account.');
 
                     redirect('users/login', $data);
                 } catch ( Exception  $e) {
                     $response = $e->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());
                     $data['status'] = 'error';
-                    $data['error_msg'] = $responseBodyAsString->error_description;
+                    $data['error_msg'] = $responseBodyAsString->errors->error[0]->description;
                 }
             }
             else
@@ -359,7 +396,6 @@ class Users extends CI_Controller
             
         }
 
-        $data['user'] = $userDetails;
         //load the view
         $this->load->view('header');
         $this->load->view('users/registration', $data);

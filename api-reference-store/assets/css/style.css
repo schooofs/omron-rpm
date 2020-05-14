@@ -125,7 +125,7 @@ footer img.pull-right {
     color: #bebebe;
     opacity: 1; 
 }
-.form-wrapper .help-block {
+.form-wrapper .help-block, .error {
     color: red;
 }
 
