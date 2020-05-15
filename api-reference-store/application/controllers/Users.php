@@ -53,9 +53,11 @@ class Users extends CI_Controller
 
             $fullAccessToken = $this->session->userdata( 'access_token' );
 
-            $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username='".$this->session->userdata('user_login')."';");
+            $query = $this->db->query("SELECT `physician_id`, `terms_accepted`, `policy_accepted` FROM `ci_users` WHERE username='".$this->session->userdata('user_login')."';");
             foreach ($query->result() as $row) {
                 $data['physicianId'] = $row->physician_id;
+                $data['agreeTerms'] = $row->terms_accepted;
+                $data['agreeAcc'] = $row->policy_accepted;
                 break;
             }
 
@@ -87,21 +89,28 @@ class Users extends CI_Controller
             
             // Get the shopper payment data
             $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
-            // var_dump($shopperPaymentArray);
-            // exit;
+
             if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                $data['paymentInfo'] =  array(
-                    'paymentOptions' => $shopperPaymentArray['paymentOptions']['paymentOption']
+                $data['paymentInfo'][] =  array(
+                    'paymentOptionId' => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'],
+                    'paymentOption' => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['nickName'],
+                    'expMonth'    => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['expirationMonth'],
+                    'expYear'    => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['expirationYear'],
+                    'creditCardNum' => '**** **** **** ' . $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['lastFourDigits'],
                 );
             } else {
-                $data['paymentInfo'] =  array(
-                    'paymentOptions' => ''
+                $data['paymentInfo'][] =  array(
+                    'paymentOptionId' => 0,
+                    'paymentOption' => 'Add New',
+                    'expMonth'    => '',
+                    'expYear'    => '',
+                    'creditCardNum' => '',
                 );
             }
 
             $data['stateCodes'] = $this->get_states();
 
-            if($this->input->post('accountSubmit')) {
+            if($this->input->post('accountForm')) {
 
                 $this->form_validation->set_rules('firstName', 'firstname', 'required');
                 $this->form_validation->set_rules('lastName', 'lastName', 'required');
@@ -113,81 +122,74 @@ class Users extends CI_Controller
                 $this->form_validation->set_rules('city', 'city', 'required');
                 $this->form_validation->set_rules('country', 'country', 'required');
                 $this->form_validation->set_rules('state', 'state', 'required');
-                $this->form_validation->set_rules('paymentOptionName', 'paymentOptionName', 'required');
+                // $this->form_validation->set_rules('paymentOptionName', 'paymentOptionName', 'required');
 
-                $userDetails = array (
-                    'emailAddress' => strip_tags($this->input->post('email')),
-                    'firstName' => strip_tags($this->input->post('firstName')),
-                    'lastName' => strip_tags($this->input->post('lastName')),
-                );
+                try {
 
-                //Set shoppers details
-                $shopperDetails = $shopperService->updateShopper($fullAccessToken, $userDetails);
+                    $userDetails = array (
+                        'emailAddress' => strip_tags($this->input->post('email')),
+                        'firstName' => strip_tags($this->input->post('firstName')),
+                        'lastName' => strip_tags($this->input->post('lastName')),
+                    );
 
-                $billingDetails =  array(
-                    'nickName' => 'Default Address',
-                    'isDefault'=> 'true',
-                    'companyName' => strip_tags($this->input->post('companyName')),
-                    'firstName'=> strip_tags($this->input->post('firstName')),
-                    'lastName'=> strip_tags($this->input->post('lastName')),
-                    'line1'=> strip_tags($this->input->post('address1')),
-                    'line2'=> strip_tags($this->input->post('address2')),
-                    'city'=> strip_tags($this->input->post('city')),
-                    'country'=> 'US',
-                    'postalCode'=> strip_tags($this->input->post('zip')),
-                    'countryName'=> strip_tags($this->input->post('country')),
-                    'phoneNumber'=> strip_tags($this->input->post('phone')),
-                    'countrySubdivision' => strip_tags($this->input->post('state')),
-                );
+                    //Set shoppers details
+                    $shopperDetails = $shopperService->updateShopper($fullAccessToken, $userDetails);
 
-                try{
+                    $billingDetails =  array(
+                        'nickName' => 'Default Address',
+                        'isDefault'=> 'true',
+                        'companyName' => strip_tags($this->input->post('companyName')),
+                        'firstName'=> strip_tags($this->input->post('firstName')),
+                        'lastName'=> strip_tags($this->input->post('lastName')),
+                        'line1'=> strip_tags($this->input->post('address1')),
+                        'line2'=> strip_tags($this->input->post('address2')),
+                        'city'=> strip_tags($this->input->post('city')),
+                        'country'=> 'US',
+                        'postalCode'=> strip_tags($this->input->post('zip')),
+                        'countryName'=> strip_tags($this->input->post('country')),
+                        'phoneNumber'=> strip_tags($this->input->post('phone')),
+                        'countrySubdivision' => strip_tags($this->input->post('state')),
+                    );
 
+                    //Check for  duplicant EHRID
                     $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
 
-                    $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+                    $physicianId = strip_tags($this->input->post('physicianId'));
 
                     foreach ($query->result() as $row) {
-                        if (intval($row->physician_id) === intval($physicianId)) {
-                            $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
+                        if ($row->physician_id === $physicianId) {
+                            $this->session->set_userdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
                             redirect('users/account');
                         }
                     }
 
+                    //Set shoppers billing address
+                    $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
+
+                    //Set shoppers payment options if doesnt exists
+                    // TODO: be able save multiple payment methods so the shopper can choose from, update or delete
+                    $paymentDetails = array();
+                    if (!$this->input->post('paymentOption')) {
+
+                        $paymentDetails = array(
+                            'nickName'          => strip_tags($this->input->post('paymentOptionName')),
+                            'isDefault'         => 'true',
+                            'sourceId'          => strip_tags($this->input->post('paymentSourceId')),
+                        );
+                        $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
+
+                    }
+
+                    //Set user local data
                     $userLocalData = array(
-                        'physician_id' => intval($physicianId),
+                        'physician_id' => $physicianId,
+                        'policy_accepted' => strip_tags($this->input->post('agreeAcc')),
+                        'terms_accepted' => strip_tags($this->input->post('agreeTerms')),
                     );
 
                     $this->db->update('ci_users', $userLocalData, array('username' => $this->session->userdata('user_login')));
 
-                    //Set shoppers billing address
-                    $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
-
-                    $paymentDetails = array(
-                        'nickName'          => strip_tags($this->input->post('paymentOptionName')),
-                        'isDefault'         => 'true',
-                        'sourceId'          => strip_tags($this->input->post('paymentSourceId')),
-                    );
-
-                    // 'type'              => 'CreditCardMethod',
-                    // 'displayableNumber' =>  $paymentDetails['displayableNumber'],
-                    // "creditCard": {
-                    //   "expirationMonth": "5",
-                    //   "expirationYear": "2017",
-                    //   "displayableNumber": "************1111",
-                    //   "type": "visa",
-                    //   "displayName": "Visa"
-                    // }
-
-                    // var_dump($paymentDetails);
-                    // exit;
-
-                    // $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
-
-                    // $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
-                    // $paymentID = $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'];
-
-                    // var_dump($shopperPaymentArray);
-
+                    // Prepare the updated data for the view
                     $data = array(
                         'firstName'     => $userDetails['firstName'],
                         'lastName'      => $userDetails['lastName'],
@@ -203,9 +205,14 @@ class Users extends CI_Controller
                         'state'         => $billingDetails['countrySubdivision'],
                         'stateCodes'    => $this->get_states(),
                         'paymentInfo'   => array(
-                        ),
+                            array(
+                                'paymentOptionId' => !empty($paymentDetails) ? 123 : $data['paymentInfo'][0]['paymentOptionId'],
+                                'paymentOption' => isset($paymentDetails['nickName']) ? $paymentDetails['nickName'] : $data['paymentInfo'][0]['paymentOption'],
+                        ) ),
+                        'agreeAcc'      => 'yes',
+                        'agreeTerms'    => 'yes',
                     );
-                    
+
                 } catch (Exception $ex) {
                     $response = $ex->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());
@@ -289,7 +296,7 @@ class Users extends CI_Controller
                     $response = $ex->getResponse();
                     $responseBodyAsString = json_decode($response->getBody()->getContents());
                     $data['status'] = 'error';
-                    $data['error_msg'] = $responseBodyAsString->errors->error[0]->description;
+                    $data['error_msg'] = $responseBodyAsString->error_description;
                 }
                 
             }
@@ -354,13 +361,13 @@ class Users extends CI_Controller
 
             if($this->form_validation->run() == true) {
                 try {
-                    $physicianId = preg_replace("/[^a-zA-Z0-9\s]/", "", $this->input->post('physicianId'));
+                    $physicianId =strip_tags($this->input->post('physicianId'));
 
                     $query = $this->db->query("SELECT `physician_id` FROM `ci_users`;");
 
                     foreach ($query->result() as $row) {
-                        if (intval($row->physician_id) === intval($physicianId)) {
-                            $this->session->set_userdata('error_msg', 'EHR ID: '.intval($physicianId).' is already registered by another user.');
+                        if ($row->physician_id === $physicianId) {
+                            $this->session->set_userdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
                             redirect('users/registration', $data);
                         }
                     }
@@ -368,7 +375,7 @@ class Users extends CI_Controller
                     $newShopper = $shopperService->createShopper( $userDetails, $limitedToken['access_token'] );
 
                     $userLocalData = array(
-                        'physician_id' => intval($physicianId),
+                        'physician_id' => $physicianId,
                         'username'  => $userDetails['emailAddress'],
                         'gc_reference'  => $userDetails['emailAddress']
                     );

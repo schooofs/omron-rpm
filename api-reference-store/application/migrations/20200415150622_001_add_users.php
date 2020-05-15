@@ -22,7 +22,7 @@ class Migration_001_add_users extends CI_Migration {
                     'auto_increment' => true
                 ),
                 'physician_id' => array(
-                    'type' => 'BIGINT',
+                    'type' => 'TEXT',
                     'null' => true,
                 ),
                 'gc_reference' => array(
@@ -31,6 +31,26 @@ class Migration_001_add_users extends CI_Migration {
                 ),
                 'username' => array(
                     'type' => 'TEXT',
+                    'null' => true,
+                ),
+                'terms_accepted' => array(
+                    'type' => 'TEXT',
+                    'null' => true,
+                ),
+                'policy_accepted' => array(
+                    'type' => 'TEXT',
+                    'null' => true,
+                ),
+                'data_assigned' => array(
+                    'type' => 'LONGTEXT',
+                    'null' => true,
+                ),
+                'data_processed' => array(
+                    'type' => 'INT',
+                    'null' => true,
+                ),
+                'data_processed_time' => array(
+                    'type' => 'INT',
                     'null' => true,
                 ),
             )
