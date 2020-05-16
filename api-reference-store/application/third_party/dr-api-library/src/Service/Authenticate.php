@@ -99,4 +99,38 @@ class Authenticate extends \Digitalriver\Service {
         
         return  $this->getRequest($url);
     }
+    
+    /**
+	 * Generate full access token
+	 *
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return mixed $data
+	 */
+	public function generateAccessTokenByRefId( $externalReferenceId ) {
+
+        if( !$externalReferenceId ) {
+            throw new \Exception("External Ref ID is missing");
+        }
+
+		$data = array (
+			'dr_external_reference_id' => $externalReferenceId,
+			'grant_type'               => 'client_credentials'
+		);
+
+
+        $form_data = array();
+
+        $url = $this->client->getConfig()->get('OauthEndpointUrl').'token?'
+                . 'dr_external_reference_id='.$externalReferenceId.'&grant_type=client_credentials';
+
+
+        $apiKeyToken = base64_encode($this->client->getConfig()->get('apiKey').':'
+            .$this->client->getConfig()->get('secretKey'));
+        
+        $headers = [ 'Authorization' => 'Basic '.$apiKeyToken ];
+
+        return  $this->postRequest($url, $form_data, $headers);
+	}
 }

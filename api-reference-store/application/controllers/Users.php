@@ -44,7 +44,7 @@ class Users extends CI_Controller
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         // $cartService =  new Digitalriver\Service\Cart($this->_client);
 
-        if ( $this->session->userdata( 'access_token' ) != '' ){
+        if ( $this->session->userdata( 'access_token' ) != '' ) {
             $tokenInformation = $authService->getTokenInformation($this->session->userdata( 'access_token'));
 
             if ($tokenInformation['authenticated'] !== 'true') {
@@ -76,15 +76,23 @@ class Users extends CI_Controller
 
             // Get the shoppers addresses
             $getShoopperAddress = $shopperService->getShopperAddress($fullAccessToken);
-            
+            // var_dump($getShoopperAddress);
+            // exit;
             if(isset($getShoopperAddress['addresses']['address'])) {
-                $data['companyName'] = $getShoopperAddress['addresses']['address'][0]['companyName'];
-                $data['address1'] = $getShoopperAddress['addresses']['address'][0]['line1'];
-                $data['address2'] = $getShoopperAddress['addresses']['address'][0]['line2'];
-                $data['city'] = $getShoopperAddress['addresses']['address'][0]['city'];
-                $data['state'] = $getShoopperAddress['addresses']['address'][0]['countrySubdivision'];
-                $data['zip'] = $getShoopperAddress['addresses']['address'][0]['postalCode'];
-                $data['phone'] = $getShoopperAddress['addresses']['address'][0]['phoneNumber'];
+                foreach ($getShoopperAddress['addresses']['address'] as $key => $addressBook) {
+                    if ('Default Address' === $addressBook['nickName']) {
+                        $data['companyName'] = $addressBook['companyName'];
+                        $data['address1'] = $addressBook['line1'];
+                        $data['address2'] = $addressBook['line2'];
+                        $data['city'] = $addressBook['city'];
+                        $data['state'] = $addressBook['countrySubdivision'];
+                        $data['zip'] = $addressBook['postalCode'];
+                        $data['phone'] = $addressBook['phoneNumber'];
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
             }
             
             // Get the shopper payment data
@@ -252,6 +260,19 @@ class Users extends CI_Controller
             $data['user_login'] = $this->session->userdata('user_login');
             $this->session->unset_userdata('user_login');
         }
+        
+        $authService =  new Digitalriver\Service\Authenticate($this->_client);
+        $authDrData = $authService->getDrSessionToken();
+        $drSessionToken = $authDrData['session_token'];
+        $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+
+        if ( $this->session->userdata( 'access_token' ) != '' ) {
+            $tokenInformation = $authService->getTokenInformation($this->session->userdata( 'access_token'));
+
+            if ($tokenInformation['authenticated'] === 'true') {
+                redirect('users/account');
+            }
+        }
 
         if($this->input->post('loginSubmit')) {
             $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
@@ -259,10 +280,6 @@ class Users extends CI_Controller
 
             if ($this->form_validation->run() == true) 
             {
-                $authService =  new Digitalriver\Service\Authenticate($this->_client);
-                $authDrData = $authService->getDrSessionToken();
-                $drSessionToken = $authDrData['session_token'];
-                $shopperService =  new Digitalriver\Service\Shopper($this->_client);
 
                 // var_dump($this->input->post('email'), $this->input->post('password'), $drSessionToken);
                 // exit;
@@ -298,13 +315,13 @@ class Users extends CI_Controller
                     $data['status'] = 'error';
                     $data['error_msg'] = $responseBodyAsString->error_description;
                 }
-                
             }
             else
             {
                 $data['error_msg'] = 'Wrong email or password, please try again.';
             }
         }
+
         //load the view
         $this->load->view('header');
         $this->load->view('users/login', $data);
@@ -320,12 +337,21 @@ class Users extends CI_Controller
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         $cartService =  new Digitalriver\Service\Cart($this->_client);
 
+        if ( $this->session->userdata( 'access_token' ) != '' ) {
+            $tokenInformation = $authService->getTokenInformation($this->session->userdata( 'access_token'));
+
+            if ($tokenInformation['authenticated'] === 'true') {
+                redirect('users/account');
+            }
+        }
+
         $authDrData = $authService->getDrSessionToken();
         $drSessionToken = $authDrData['session_token'];
         $limitedToken = $authService->getLimitedOauthToken($drSessionToken);
 
         $userDetails = array();
         $data = array();
+
 
         if($this->session->userdata('success_msg'))
         {
@@ -428,16 +454,16 @@ class Users extends CI_Controller
 
 
     //testing purposes
-    public function listdata()
-    {
-        echo 'Redox Data Models';
-		$query = $this->db->query("SELECT `data` FROM `ci_data_models`;");
+    // public function listdata()
+    // {
+    //     echo 'Redox Data Models';
+	// 	$query = $this->db->query("SELECT `data` FROM `ci_data_models`;");
 
-        foreach ($query->result() as $row) {
-            $fromDatabase = json_decode($row->data, true);
+    //     foreach ($query->result() as $row) {
+    //         $fromDatabase = json_decode($row->data, true);
 
-            var_dump($fromDatabase);
-        }
-    }
+    //         var_dump($fromDatabase);
+    //     }
+    // }
 
 }

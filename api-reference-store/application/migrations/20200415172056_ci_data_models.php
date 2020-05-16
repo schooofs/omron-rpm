@@ -23,6 +23,26 @@ class Migration_ci_data_models extends CI_Migration {
 				'type' => 'LONGTEXT',
 				'null' => true,
 			),
+			'physician_id' => array(
+				'type' => 'TEXT',
+				'null' => true,
+			),
+			'items' => array(
+				'type' => 'LONGTEXT',
+				'null' => true,
+			),
+			'email_notified' => array(
+				'type' => 'INT',
+				'null' => true,
+			),
+			'data_received_time' => array(
+				'type' => 'INT',
+				'null' => true,
+			),
+			'data_processed_time' => array(
+				'type' => 'INT',
+				'null' => true,
+			),
 		));
 		
 		$this->dbforge->add_key('id', TRUE);

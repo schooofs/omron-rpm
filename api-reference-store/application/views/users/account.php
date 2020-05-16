@@ -230,7 +230,7 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="agreeAcc" class="pl-2">Yes, I have the appropriate authority to create this account and certify that the answers provided are true and accurate. I agree to comply with all terms in my Company’s agreements with VitalSight. I understand that failure to comply with all of the terms in these agreements will result in suspension or termination of my account.</label>
-                          <input id="agreeAcc" type="checkbox" name="agreeAcc" value="yes" <?php echo $agreeAcc == 'yes' ? 'checked': ''; ?> required>
+                          <input id="agreeAcc" type="checkbox" name="agreeAcc" value="yes" <?php echo (!empty($agreeTerms) && $agreeAcc == 'yes') ? 'checked': ''; ?> required>
                         </div>
                       </div>
                     </div>
@@ -239,7 +239,7 @@
                       <div class="row">
                         <div class="col-12">
                           <label for="agreeTerms" class="pl-2">By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
-                          <input id="agreeTerms" type="checkbox" name="agreeTerms" value="yes" <?php echo $agreeTerms == 'yes' ? 'checked': ''; ?> required>
+                          <input id="agreeTerms" type="checkbox" name="agreeTerms" value="yes" <?php echo (!empty($agreeTerms) && $agreeTerms == 'yes') ? 'checked': ''; ?> required>
                         </div>
                       </div>
                     </div>

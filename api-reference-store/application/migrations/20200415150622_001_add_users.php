@@ -41,18 +41,6 @@ class Migration_001_add_users extends CI_Migration {
                     'type' => 'TEXT',
                     'null' => true,
                 ),
-                'data_assigned' => array(
-                    'type' => 'LONGTEXT',
-                    'null' => true,
-                ),
-                'data_processed' => array(
-                    'type' => 'INT',
-                    'null' => true,
-                ),
-                'data_processed_time' => array(
-                    'type' => 'INT',
-                    'null' => true,
-                ),
             )
 		);
 
