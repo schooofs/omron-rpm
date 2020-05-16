@@ -75,7 +75,9 @@ class Api extends RestController {
             // Get the user by physicianId from the DB so we have his `gcRefeernceId`.
             // Build a cart object in GC with the `$items` so we can present an $amount for the email
 
-            $activeCart = $this->buildCart($physicianId, $items);
+            //TODO: Find why the SKU is not find in GC
+            //might be related to api url(CTE)
+            // $activeCart = $this->buildCart($physicianId, $items);
 
             // Amount for the email $activeCart['cart']['pricing']['formattedSubtotal'];
 
@@ -88,7 +90,7 @@ class Api extends RestController {
                 'data_processed_time'=> null,
             );
 
-            $this->db->insert('ci_user_data', $db_data);
+            $this->db->insert('ci_data_models', $db_data);
 
             $this->response( [
                 'status' => true,
