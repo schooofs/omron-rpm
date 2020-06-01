@@ -71,21 +71,27 @@ class Api extends RestController {
             }
 
 
-            // TODO: Send mail here and note if successful in the `email_notified`=>1 column
-            // Get the user by physicianId from the DB so we have his `gcRefeernceId`.
-            // Build a cart object in GC with the `$items` so we can present an $amount for the email
+            
 
-            //TODO: Find why the SKU is not find in GC
-            //might be related to api url(CTE)
-            // $activeCart = $this->buildCart($physicianId, $items);
+            
+            
+            
+            // $gcReference = $this->getGCreferenceById($physicianId);
+            // $activeCart = $this->buildCart($gcReference, $items);
 
+            // var_dump($activeCart);
+            // exit;
+
+            $cordial = null;
             // Amount for the email $activeCart['cart']['pricing']['formattedSubtotal'];
+            // TODO: Send mail here and note if successful in the `email_notified`=>1 column
 
+            // 
             $db_data = array(
                 'physician_id'       => $physicianId,
                 'data'               => $raw_submission,
                 'items'              => json_encode($items),
-                'email_notified'     => null,
+                'email_notified'     => $cordial,
                 'data_received_time' => time(),
                 'data_processed_time'=> null,
             );
@@ -107,21 +113,9 @@ class Api extends RestController {
     
     // Create GC Cart from Submission
     // This should be moved to a proper location
-    public function buildCart($physicianId, $items) {
-        if( !$physicianId && !$items ) {
-            throw new \Exception("PhysicianId or Items are missing");
-        }
-
-        //Get Physician
-        $gcReference = null;
-        $query = $this->db->query("SELECT `gc_reference` FROM `ci_users` WHERE physician_id='".$physicianId."';");
-        foreach ($query->result() as $row) {
-            $gcReference = $row->gc_reference;
-            break;
-        }
-
-        if( !$gcReference ) {
-            throw new \Exception("This EHRID ". $physicianId ." is not registered on the server");
+    public function buildCart($gcReference, $items) {
+        if( !$gcReference && !$items ) {
+            throw new \Exception("GC reference ID or Items are missing");
         }
 
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
@@ -137,5 +131,26 @@ class Api extends RestController {
         }
 
         return $cartService->retrieveCart($fullAccessToken);
+    }
+
+    public function getGCreferenceById( $physicianId ) {
+        if( !$physicianId ) {
+            throw new \Exception("PhysicianId or Items are missing");
+        }
+
+        
+        //Get Physician
+        $gcReference = null;
+        $query = $this->db->query("SELECT `gc_reference` FROM `ci_users` WHERE physician_id='".$physicianId."';");
+        foreach ($query->result() as $row) {
+            $gcReference = $row->gc_reference;
+            break;
+        }
+
+        if( !$gcReference ) {
+            throw new \Exception("This username ". $gcReference ." is not registered on the server");
+        }
+
+        return $gcReference;
     }
 }

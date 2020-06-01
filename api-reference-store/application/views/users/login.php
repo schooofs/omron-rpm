@@ -28,6 +28,7 @@
                 <label for="">Password</label>
                 <input type="password" class="form-control" name="password" placeholder="" required="">
                 <?php echo form_error('password','<span class="help-block">','</span>'); ?>
+                <a class="forgot-password" href="<?php echo base_url(); ?>users/reset">Forgot your password or email?</a>
               </div>
               <div class="form-group">
                   <input type="submit" name="loginSubmit" class="btn btn-success" value="Login"/>
