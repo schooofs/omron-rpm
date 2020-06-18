@@ -97,6 +97,7 @@ footer img.pull-right {
     font-family: Gotham;
     max-width: 514px;
     width: 100%;
+    -webkit-user-select: text;
 }
 
 .form-wrapper select {

@@ -70,16 +70,23 @@ class Api extends RestController {
                 ], 400 );
             }
 
-            // Auth the physician
+            // Retrieve the user if suck FacilityCode/PhysicianId exists
             $gcReference = $this->getGCreferenceById($physicianId);
 
             // Create cart object based on the transmision
             $activeCart = $this->buildCart($gcReference, $items);
 
-            var_dump($activeCart);
-            exit;
+            var_dump($activeCart['cart']['billingAddress']['companyName'], $activeCart);
 
-            $cordial = null;
+            $cordial = array(
+                'channels.email.address'=> $gcReference,
+                'vs_company_name'       => $activeCart['cart']['billingAddress']['companyName'],
+                'vs_payment_amount'     => $activeCart['cart']['pricing']['formattedSubtotal'],
+                'vs_numberofproducts'   => $activeCart['cart']['lineItems']['lineItem'][0]['quantity'],
+            );
+
+            var_dump($cordial);
+            exit;
             // Amount for the email $activeCart['cart']['pricing']['formattedSubtotal'];
             // TODO: Send mail here and note if successful in the `email_notified`=>1 column
 
@@ -108,8 +115,7 @@ class Api extends RestController {
         }
     }
     
-    // Create GC Cart from Submission
-    // This should be moved to a proper location
+    // Create GC Cart from submission
     public function buildCart($gcReference, $items) {
         if( !$gcReference && !$items ) {
             throw new \Exception("GC reference ID or Items are missing");
@@ -121,7 +127,8 @@ class Api extends RestController {
         $accessToken = $authService->generateAccessTokenByRefId($gcReference);
         $fullAccessToken = $accessToken['access_token'];
 
-        // $cartService->applyShopper($fullAccessToken);
+        // Attaches a shopper record to an active cart
+        $cartService->applyShopper($fullAccessToken);
 
         foreach($items as $item) {
             $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity']);
@@ -135,7 +142,6 @@ class Api extends RestController {
             throw new \Exception("PhysicianId or Items are missing");
         }
 
-        
         //Get Physician
         $gcReference = null;
         $query = $this->db->query("SELECT `gc_reference` FROM `ci_users` WHERE physician_id='".$physicianId."';");

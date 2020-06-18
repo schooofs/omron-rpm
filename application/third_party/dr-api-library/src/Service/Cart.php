@@ -14,7 +14,7 @@ class Cart extends \Digitalriver\Service {
     public function __construct(\Digitalriver\Client $client) {
         parent::__construct($client);
     }
-    
+
     /*
      * Updates an active cart with a product or coupon code. 
      * Provide product ID Digital River will add that product to the shopper's cart.
@@ -34,7 +34,7 @@ class Cart extends \Digitalriver\Service {
         );
         return  $this->postRequest($url, $form_data, $headers);
     }
-    
+
     /****
      *  Retrieve the contents of an active cart. Accespt access token as input parameter 
     */
@@ -50,7 +50,7 @@ class Cart extends \Digitalriver\Service {
         }        
         return  $this->getRequest($url);
     }
-    
+
     /*
      * Update and/or add product line-items to an active cart.
      *  Supply one or more product ID's or your system's product ID's 
@@ -62,8 +62,8 @@ class Cart extends \Digitalriver\Service {
         if( !$lineitemId || !$accessToken ) {
             throw new \Exception("Line Item Id or Access Token is missing");
         }
-        $url = $this->client->getConfig()->get('cartUrl').'/active/line-items/'
-                . $lineitemId.'?token='.$accessToken.'&action='.$action.'&quantity='.$qunatity;
+        $url = $this->client->getConfig()->get('cartUrl').'/active/line-items/?productId='
+                . $lineitemId.'&token='.$accessToken.'&action='.$action.'&quantity='.$qunatity;
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
@@ -72,7 +72,7 @@ class Cart extends \Digitalriver\Service {
         );
         return $this->postRequest($url, array(), $headers);
     }
-    
+
     /*
      * Deletes a specific cart line item. 
      * Provide the line-item ID 
@@ -88,7 +88,7 @@ class Cart extends \Digitalriver\Service {
         );
         return  $this->deleteRequest($url, array(), $headers);
     }
-    
+
     /*
      * Updates the billing address for a cart.
      * You can use this resource to override the default billing address on the cart. 
@@ -108,12 +108,11 @@ class Cart extends \Digitalriver\Service {
         );
         return  $this->putRequest($url, $billingDetails, $headers);
     }
-    
+
     /****
      *  Retrieve a cart billing address. 
      *  Accespt access token as input parameter 
     */
-    
     public function retrieveBillingAddress( $accessToken ) {
         if( !$accessToken ) {
             throw new \Exception("Token information is missing");
@@ -122,7 +121,7 @@ class Cart extends \Digitalriver\Service {
                 . '?token='.$accessToken;
         return  $this->getRequest($url);
     }
-    
+
     /****
      *  Updates the payment method of a cart. 
      *  Supply a full access token as well as a payment method ID 
@@ -144,7 +143,7 @@ class Cart extends \Digitalriver\Service {
         ));
         return  $this->postJsonRequest($url, $jsonData ,$headers);
     }
-    
+
     /*
      * Submit a cart and creates an order. 
      * Provide access token as input.
@@ -160,12 +159,11 @@ class Cart extends \Digitalriver\Service {
         );
         return  $this->postRequest($url, array(), $headers);
     }
-    
+
     /****
      *  Retrieve a cart payment Details 
      *  Accespt access token as input parameter 
     */
-    
     public function retrievePaymentMethods( $accessToken = null ) {
         if( !$accessToken ) {
             throw new \Exception("Token information is missing");
@@ -174,7 +172,7 @@ class Cart extends \Digitalriver\Service {
                 . '?token='.$accessToken;
         return  $this->getRequest($url);
     }
-    
+
     /*
      * Attaches a shopper record to an active cart 
      * (sets payment method, billing and shipping address).. 
@@ -200,7 +198,7 @@ class Cart extends \Digitalriver\Service {
 
         return  $this->postRequest($url, $form_data, $headers);
     }
-    
+
     /**
      * Returns a list of all cart line-items.
      * Accept access token as input paramete
@@ -213,7 +211,7 @@ class Cart extends \Digitalriver\Service {
                 . '?token='.$accessToken;
         return  $this->getRequest($url);
     }
-    
+
     /**
      * Retrieve a cart line-item.
      * Accept access token and line itemId as input paramete
@@ -226,7 +224,7 @@ class Cart extends \Digitalriver\Service {
                 . '?token='.$accessToken;
         return  $this->getRequest($url);
     }
-    
+
     /*
      * Returns a list of all offers for a specific cart POP.
      * Required Access Token,popName as input

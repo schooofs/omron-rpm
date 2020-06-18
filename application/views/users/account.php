@@ -169,7 +169,7 @@
                             <label for="paymentOption" class="label-txt">Saved Payment Option</span></label>
                             <select class="selectBox" name="paymentOption" id="paymentOption">
                               <?php foreach($paymentInfo as $payment){?>
-                                <option value="<?php echo $payment['paymentOptionId']; ?>" selected><?php echo $payment['paymentOption']; ?></option>
+                                <option value="<?php echo $payment['paymentOptionId']; ?>" selected><?php echo $payment['paymentOption'] . ': ' . $payment['creditCardNum']; ?></option>
                               <?php } ?>
                             </select>
                           </div>

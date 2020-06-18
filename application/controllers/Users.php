@@ -18,7 +18,6 @@ class Users extends CI_Controller
         $this->_client->setApiVersion($this->config->item('api_version'));
         $this->_client->setEnvironment($this->config->item('environment'));
         $this->_client->setTestOrder($this->config->item('test_order'));
-        // $this->_client->setPrivateApiKey($this->config->item('privateApiKey'));
         $this->_client->setSecretKey($this->config->item('secretKey'));
     }
     
@@ -76,11 +75,10 @@ class Users extends CI_Controller
 
             // Get the shoppers addresses
             $getShoopperAddress = $shopperService->getShopperAddress($fullAccessToken);
-            // var_dump($getShoopperAddress);
-            // exit;
+
             if(isset($getShoopperAddress['addresses']['address'])) {
                 foreach ($getShoopperAddress['addresses']['address'] as $key => $addressBook) {
-                    if ('Default Address' === $addressBook['nickName']) {
+                    if ('Default Address' == $addressBook['nickName']) {
                         $data['companyName'] = $addressBook['companyName'];
                         $data['address1'] = $addressBook['line1'];
                         $data['address2'] = $addressBook['line2'];
@@ -90,11 +88,11 @@ class Users extends CI_Controller
                         $data['phone'] = $addressBook['phoneNumber'];
                         break;
                     } else {
-                        continue;
+                        $shopperService->deleteShopperAddress( $fullAccessToken, $addressBook['id'] );
                     }
                 }
             }
-            
+
             // Get the shopper payment data
             $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
 
@@ -134,6 +132,18 @@ class Users extends CI_Controller
 
                 try {
 
+                    //Check for  duplicant EHRID
+                    $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
+
+                    $physicianId = strip_tags($this->input->post('physicianId'));
+
+                    foreach ($query->result() as $row) {
+                        if ($row->physician_id === $physicianId) {
+                            $this->session->set_userdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
+                            redirect('users/account');
+                        }
+                    }
+
                     $userDetails = array (
                         'emailAddress' => strip_tags($this->input->post('email')),
                         'firstName' => strip_tags($this->input->post('firstName')),
@@ -145,7 +155,7 @@ class Users extends CI_Controller
 
                     $billingDetails =  array(
                         'nickName' => 'Default Address',
-                        'isDefault'=> 'true',
+                        'isDefault'=> true,
                         'companyName' => strip_tags($this->input->post('companyName')),
                         'firstName'=> strip_tags($this->input->post('firstName')),
                         'lastName'=> strip_tags($this->input->post('lastName')),
@@ -158,18 +168,6 @@ class Users extends CI_Controller
                         'phoneNumber'=> strip_tags($this->input->post('phone')),
                         'countrySubdivision' => strip_tags($this->input->post('state')),
                     );
-
-                    //Check for  duplicant EHRID
-                    $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
-
-                    $physicianId = strip_tags($this->input->post('physicianId'));
-
-                    foreach ($query->result() as $row) {
-                        if ($row->physician_id === $physicianId) {
-                            $this->session->set_userdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
-                            redirect('users/account');
-                        }
-                    }
 
                     //Set shoppers billing address
                     $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
@@ -185,7 +183,9 @@ class Users extends CI_Controller
                             'sourceId'          => strip_tags($this->input->post('paymentSourceId')),
                         );
                         $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
-
+                        // Get the shopper payment data
+                    } else {
+                        $paymentDetails = $shopperService->getShopperPayments( $fullAccessToken );
                     }
 
                     //Set user local data
@@ -214,8 +214,11 @@ class Users extends CI_Controller
                         'stateCodes'    => $this->get_states(),
                         'paymentInfo'   => array(
                             array(
-                                'paymentOptionId' => !empty($paymentDetails) ? 123 : $data['paymentInfo'][0]['paymentOptionId'],
-                                'paymentOption' => isset($paymentDetails['nickName']) ? $paymentDetails['nickName'] : $data['paymentInfo'][0]['paymentOption'],
+                                'paymentOptionId' => $paymentDetails['paymentOptions']['paymentOption'][0]['id'],
+                                'paymentOption' => $paymentDetails['paymentOptions']['paymentOption'][0]['nickName'],
+                                'expMonth'    => $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['expirationMonth'],
+                                'expYear'    => $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['expirationYear'],
+                                'creditCardNum' => '**** **** **** ' . $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['lastFourDigits'],
                         ) ),
                         'agreeAcc'      => 'yes',
                         'agreeTerms'    => 'yes',
@@ -451,19 +454,5 @@ class Users extends CI_Controller
     public function get_states() {
         return array('AL'=>"Alabama",  'AK'=>"Alaska",  'AZ'=>"Arizona",  'AR'=>"Arkansas",  'CA'=>"California",  'CO'=>"Colorado",  'CT'=>"Connecticut",  'DE'=>"Delaware",  'DC'=>"District Of Columbia",  'FL'=>"Florida",  'GA'=>"Georgia",  'HI'=>"Hawaii",  'ID'=>"Idaho",  'IL'=>"Illinois",  'IN'=>"Indiana",  'IA'=>"Iowa",  'KS'=>"Kansas",  'KY'=>"Kentucky",  'LA'=>"Louisiana",  'ME'=>"Maine",  'MD'=>"Maryland",  'MA'=>"Massachusetts",  'MI'=>"Michigan",  'MN'=>"Minnesota",  'MS'=>"Mississippi",  'MO'=>"Missouri",  'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",  'OK'=>"Oklahoma",  'OR'=>"Oregon",  'PA'=>"Pennsylvania",  'RI'=>"Rhode Island",  'SC'=>"South Carolina",  'SD'=>"South Dakota",'TN'=>"Tennessee",  'TX'=>"Texas",  'UT'=>"Utah",  'VT'=>"Vermont",  'VA'=>"Virginia",  'WA'=>"Washington",  'WV'=>"West Virginia",  'WI'=>"Wisconsin",  'WY'=>"Wyoming");
     }
-
-
-    //testing purposes
-    // public function listdata()
-    // {
-    //     echo 'Redox Data Models';
-	// 	$query = $this->db->query("SELECT `data` FROM `ci_data_models`;");
-
-    //     foreach ($query->result() as $row) {
-    //         $fromDatabase = json_decode($row->data, true);
-
-    //         var_dump($fromDatabase);
-    //     }
-    // }
 
 }

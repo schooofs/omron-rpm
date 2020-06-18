@@ -8,3 +8,30 @@ function appendDataToConsole() {
     }
 }
 
+ // $(document).on("click", "#forgot_pass_btn" , function() {
+    //     $('form[name="forgot_pass"]').validate({
+    //         rules: {
+    //             forgotemail: {
+    //                 required: true,
+    //                 email: true
+    //             },
+    //             verifyForgotemail : {
+    //                 required: true,
+    //                 equalTo: "#forgotemail"
+    //             }
+    //         },
+    //         submitHandler: function() {
+    //             return false;
+    //         },
+    //         messages: {
+    //             forgotemail: {
+    //                 required: "Enter the Email Address",
+    //                 email: "Invalid Email Address"
+    //             },        
+    //             verifyForgotemail: {
+    //                 required: "Enter the Email Address",
+    //                 equalTo:  "Verify the Email Address"
+    //             }
+    //         }
+    //     });
+    // });
