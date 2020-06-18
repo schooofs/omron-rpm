@@ -9,7 +9,7 @@ class Migration_001_add_users extends CI_Migration {
 	 *
 	 * @var string
 	 */
-	protected $_table_name = "ci_users";
+	protected $_table_name = "users";
 
 	public function up()
 	{

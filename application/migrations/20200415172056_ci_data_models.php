@@ -9,7 +9,7 @@ class Migration_ci_data_models extends CI_Migration {
 	 *
 	 * @var string
 	 */
-	protected $_table_name = "ci_data_models";
+	protected $_table_name = "data_models";
 
 	public function up()
 	{
