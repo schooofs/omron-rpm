@@ -184,9 +184,9 @@ class Users extends CI_Controller
                         );
                         $shopperService->updateShopperPayment( $fullAccessToken, $paymentDetails );
                         // Get the shopper payment data
-                    } else {
-                        $paymentDetails = $shopperService->getShopperPayments( $fullAccessToken );
                     }
+
+                    $paymentDetails = $shopperService->getShopperPayments( $fullAccessToken );
 
                     //Set user local data
                     $userLocalData = array(
