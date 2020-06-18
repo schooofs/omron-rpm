@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://omron-rpm.local';
+$config['base_url'] = 'http://www.portal.omronhealthcare.com/';
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ $config['base_url'] = 'http://omron-rpm.local';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = '';
+$config['index_page'] = 'index.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -324,7 +324,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = '909134974';
 
 /*
 |--------------------------------------------------------------------------
@@ -378,7 +378,7 @@ $config['encryption_key'] = '';
 |
 */
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'sess_';
+$config['sess_cookie_name'] = 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
@@ -522,7 +522,6 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-
 /***
  *  ------------------------------------------------
  *      Custom Config Variables used for the site
@@ -532,7 +531,6 @@ $config['proxy_ips'] = '';
 $config['application_name']             = 'VitalSight';
 $config['site_id']                      = 'omronrpm';
 $config['api_key']                      = '3c923041294d428e98ddde1d5805b392';
-// $config['privateApiKey']                = '7bba748a97224139883cdb02fc3d396a';
 $config['secretKey']                    = '92fe007e91c5466cae3a3c0688b64d4a';
 $config['environment']                  = 'production';
 $config['api_version']                  = 'v1';
