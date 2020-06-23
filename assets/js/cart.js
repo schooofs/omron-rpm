@@ -109,7 +109,7 @@ $(document).ready(function(){
                             cardDetails = result.source.creditCard;
                             sourceId = result.source.id;
                             $('input[name="paymentSourceId"]').val(sourceId);
-                            console.log($('input[name="paymentSourceId"]').val());
+                            // console.log($('input[name="paymentSourceId"]').val());
                             $form.submit();
                         }
                     }); //source

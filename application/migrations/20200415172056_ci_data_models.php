@@ -19,12 +19,12 @@ class Migration_ci_data_models extends CI_Migration {
 				'unsigned' => true,
 				'auto_increment' => true
 			),
-			'data' => array(
-				'type' => 'LONGTEXT',
+			'user_id' => array(
+				'type' => 'INT',
 				'null' => true,
 			),
-			'physician_id' => array(
-				'type' => 'TEXT',
+			'data' => array(
+				'type' => 'LONGTEXT',
 				'null' => true,
 			),
 			'items' => array(
@@ -40,6 +40,10 @@ class Migration_ci_data_models extends CI_Migration {
 				'null' => true,
 			),
 			'data_processed_time' => array(
+				'type' => 'INT',
+				'null' => true,
+			),
+			'order_submitted'	  => array(
 				'type' => 'INT',
 				'null' => true,
 			),

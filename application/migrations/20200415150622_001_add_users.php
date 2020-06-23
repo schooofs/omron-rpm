@@ -41,6 +41,14 @@ class Migration_001_add_users extends CI_Migration {
                     'type' => 'TEXT',
                     'null' => true,
                 ),
+                'pw_reset_token' => array(
+                    'type' => 'TEXT',
+                    'null' => true,
+                ),
+                'pw_reset_token_created_at' => array(
+                    'type' => 'INT',
+                    'null' => true,
+                ),
             )
 		);
 
@@ -58,5 +66,3 @@ class Migration_001_add_users extends CI_Migration {
 	}
 
 }
-
-?>

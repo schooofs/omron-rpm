@@ -20,13 +20,15 @@ class Api extends RestController {
         $this->_client->setApiVersion($this->config->item('api_version'));
         $this->_client->setEnvironment($this->config->item('environment'));
         $this->_client->setTestOrder($this->config->item('test_order'));
-        $this->_client->setPrivateApiKey($this->config->item('privateApiKey'));
         $this->_client->setSecretKey($this->config->item('secretKey'));
 
         $this->destination_verification_token = config_item('destination_token');
+
+        $this->load->library('cordial');
+
     }
 
-    // Verify connection with Redox
+    // Verify connection with Redox and return the challenge
     public function physicians_get()
     {
     	$headers = $this->input->request_headers();
@@ -46,12 +48,21 @@ class Api extends RestController {
     // Receive and process a submission from Redox  
     public function physicians_post()
     {
+        //Verify source
+        $headers = $this->input->request_headers();
+        if ( !array_key_exists('verification-token', $headers) && $headers['verification-token'] !== $this->destination_verification_token ) {
+			$this->response( [
+                'status' => false,
+                'message' => 'verification-token did not match!'
+            ], 400 );
+	    }
+
         $db_data = array();
         $items = array();
 		$raw_submission = $this->input->raw_input_stream;
         $submission = json_decode($raw_submission, true);
 
-        if(!empty($submission) && array_key_exists('FacilityCode', $submission['Meta'])) {
+        if( !empty($submission) && array_key_exists('FacilityCode', $submission['Meta']) ) {
             $physicianId = $submission['Meta']['FacilityCode'];
 
             if(array_key_exists('Items', $submission)) {
@@ -70,37 +81,44 @@ class Api extends RestController {
                 ], 400 );
             }
 
-            // Retrieve the user if suck FacilityCode/PhysicianId exists
-            $gcReference = $this->getGCreferenceById($physicianId);
+            // Get user from FacilityCode/PhysicianId
+            $user = $this->user->getByPhysicianId($physicianId);
 
             // Create cart object based on the transmision
-            $activeCart = $this->buildCart($gcReference, $items);
+            $activeCart = $this->buildCart($user->gc_reference, $items);
 
-            var_dump($activeCart['cart']['billingAddress']['companyName'], $activeCart);
+            $qty = 0;
+            foreach($activeCart['cart']['cart']['lineItems']['lineItem'] as $prod) {
+                $qty += intval($prod['quantity']);
+            }
 
-            $cordial = array(
-                'channels.email.address'=> $gcReference,
-                'vs_company_name'       => $activeCart['cart']['billingAddress']['companyName'],
-                'vs_payment_amount'     => $activeCart['cart']['pricing']['formattedSubtotal'],
-                'vs_numberofproducts'   => $activeCart['cart']['lineItems']['lineItem'][0]['quantity'],
-            );
+            $cordialBody =  [
+                'identifyBy'    => 'email',
+                'to'            => [
+                    'contact'       => [
+                        'email'         => $user->username,
+                    ],
+                    'extVars'           => [
+                        'vs_company_name'       => $activeCart['address']['addresses']['address'][0]['companyName'],
+                        'vs_payment_amount'     => $activeCart['cart']['cart']['pricing']['formattedSubtotal'],
+                        'vs_numberofproducts'   => $qty
+                    ],
+                ],
+            ];
+ 
+            //Send monthly email notification
+            $cordial = $this->cordial->postMonthlyStatement($cordialBody);
 
-            var_dump($cordial);
-            exit;
-            // Amount for the email $activeCart['cart']['pricing']['formattedSubtotal'];
-            // TODO: Send mail here and note if successful in the `email_notified`=>1 column
-
-            // 
             $db_data = array(
-                'physician_id'       => $physicianId,
+                'user_id'            => intval($user->id),
                 'data'               => $raw_submission,
                 'items'              => json_encode($items),
-                'email_notified'     => $cordial,
+                'email_notified'     => $cordial['success'] ? 1 : 0,
                 'data_received_time' => time(),
                 'data_processed_time'=> null,
             );
-
-            $this->db->insert('ci_data_models', $db_data);
+            
+            $this->submission->insert($db_data);
 
             $this->response( [
                 'status' => true,
@@ -114,7 +132,7 @@ class Api extends RestController {
             ], 400 );
         }
     }
-    
+
     // Create GC Cart from submission
     public function buildCart($gcReference, $items) {
         if( !$gcReference && !$items ) {
@@ -123,37 +141,19 @@ class Api extends RestController {
 
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         $cartService =  new Digitalriver\Service\Cart($this->_client);
+        $shopperService =  new Digitalriver\Service\Shopper($this->_client);
         
         $accessToken = $authService->generateAccessTokenByRefId($gcReference);
         $fullAccessToken = $accessToken['access_token'];
 
-        // Attaches a shopper record to an active cart
-        $cartService->applyShopper($fullAccessToken);
+        if (empty($fullAccessToken)) {
+            throw new \Exception("Failed to authenticate with GC!");
+        }
 
         foreach($items as $item) {
-            $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity']);
+            $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] );
         }
 
-        return $cartService->retrieveCart($fullAccessToken);
-    }
-
-    public function getGCreferenceById( $physicianId ) {
-        if( !$physicianId ) {
-            throw new \Exception("PhysicianId or Items are missing");
-        }
-
-        //Get Physician
-        $gcReference = null;
-        $query = $this->db->query("SELECT `gc_reference` FROM `ci_users` WHERE physician_id='".$physicianId."';");
-        foreach ($query->result() as $row) {
-            $gcReference = $row->gc_reference;
-            break;
-        }
-
-        if( !$gcReference ) {
-            throw new \Exception("This username ". $gcReference ." is not registered on the server");
-        }
-
-        return $gcReference;
+        return [ 'cart' => $cartService->retrieveCart($fullAccessToken), 'address' => $shopperService->getShopperAddress($fullAccessToken) ];
     }
 }

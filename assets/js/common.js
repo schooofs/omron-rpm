@@ -8,6 +8,21 @@ function appendDataToConsole() {
     }
 }
 
+$(document).ready(function(){
+
+    $('#resetPassword').on('shown.bs.modal', function () {
+        $(this).find('.form-control').trigger('focus');
+    });
+
+    if($('#resetPassword').data('trigger')) {
+        $('#resetPassword').modal('show');
+    }
+
+    if($('#resetPasswordSubmit').length && $('#resetPasswordSubmit').data('trigger')) {
+        $('#resetPasswordSubmit').modal('show');
+    }
+
+});
  // $(document).on("click", "#forgot_pass_btn" , function() {
     //     $('form[name="forgot_pass"]').validate({
     //         rules: {

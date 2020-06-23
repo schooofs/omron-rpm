@@ -63,7 +63,8 @@ class Cart extends \Digitalriver\Service {
             throw new \Exception("Line Item Id or Access Token is missing");
         }
         $url = $this->client->getConfig()->get('cartUrl').'/active/line-items/?productId='
-                . $lineitemId.'&token='.$accessToken.'&action='.$action.'&quantity='.$qunatity;
+                . $lineitemId.'&token='.$accessToken.'&action='.$action.'&quantity='.$qunatity.
+                '&testOrder='.$this->client->getConfig()->get('testOrder');
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
