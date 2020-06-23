@@ -76,7 +76,7 @@
   </div>
 </div>
 
-<?php if($reset_pass): ?>
+<?php if(!empty($reset_pass)): ?>
   <!-- Reset Password Modal -->
   <div class="modal fade" id="resetPasswordSubmit" tabindex="-1" role="dialog" aria-labelledby="resetPasswordSubmitModal" aria-hidden="true" <?php echo !empty($reset_pass) ? 'data-trigger="true"': ''; ?>>
     <div class="modal-dialog modal-dialog-centered" role="document">
