@@ -157,7 +157,7 @@ class Shopper extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        
+
         $jsonData = [ 'shopper' => $updateParam ];
         $headers = array(
             'Content-Type' => 'application/json'

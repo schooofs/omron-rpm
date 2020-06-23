@@ -22,4 +22,11 @@ class Submission_model extends CI_Model {
         ->get()
         ->result();
     }
+
+    public function getUnprocessed() {
+        return $this->db->select('*')->from($this->table_name)
+        ->where('data_processed_time', null)
+        ->get()
+        ->result();
+    }
 }

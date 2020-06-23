@@ -29,7 +29,7 @@ class Cron extends CI_Controller  {
         if($this->input->is_cli_request()) {
             
             $submissions = $this->submission->getThisMonth();
-
+            // $submissions = $this->submissions->getUnprocessed();
             if (!$submissions) {
                 throw new \Exception("No data submissions were found!");
             }
@@ -64,10 +64,10 @@ class Cron extends CI_Controller  {
                 echo 'Submission with ID "' . $submission->id . '" was processed.';
             }
 
+            echo '---Done---';
+
         } else {
             echo "You dont have access";
         }
-
-        
     }
 }
