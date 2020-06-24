@@ -40,15 +40,23 @@ class Cron extends CI_Controller  {
 
             foreach($submissions as $key => $submission) {
 
-                if( $submission->order_submitted ) {
+                $user = $this->user->getById($submission->user_id);
+
+                if(!$user){
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
-                    echo 'No unprocessed submissions were found for ' . date('m-Y') . PHP_EOL;
+                    echo 'User was not found with ID [' . $submission->user_id . '] ' . PHP_EOL;
+                    echo 'Failed to process submission with ID [' . $submission->id . '] ' . PHP_EOL;
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
-                    exit;
                     continue;
                 }
 
-                $user = $this->user->getById($submission->user_id);
+                if( $submission->order_submitted ) {
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo 'Submission with ID "' . $submission->id . '" and EHR ID "'. $user->physician_id .'" was already processed on ' . date("D M j G:i:s T Y", $submission->data_processed_time )  . ' ' . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    continue;
+                }
+
                 $accessToken = $authService->generateAccessTokenByRefId($user->gc_reference);
                 $fullAccessToken = $accessToken['access_token'];
 

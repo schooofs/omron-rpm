@@ -217,6 +217,7 @@ class Users extends CI_Controller
                         ) ),
                         'agreeAcc'      => 'yes',
                         'agreeTerms'    => 'yes',
+                        'success_msg'   => 'Changes successfully saved.',
                     );
 
                 } catch (Exception $ex) {
@@ -302,7 +303,7 @@ class Users extends CI_Controller
                         'user_login', $this->input->post('email')
                     );
 
-                    $this->session->set_flashdata('success_msg', 'Your login was successful. Please enter the required user and payment information bellow.');
+                    $this->session->set_flashdata('success_msg', 'Your login was successful. Please enter the required user and payment information below.');
 
                     $data['status'] = 'ok';
                     $data['fullAccessToken'] = $getFullAccessToken['access_token'];

@@ -96,10 +96,10 @@
                   <div class="form-group">
                     <div class="row">
                       <div class="col-md-6">
-                        <label for="">Zip Code*</label>
-                        <input type="text" class="form-control" name="zip" placeholder="Zip/Postal Code" required="" value="<?php echo !empty($zip)?$zip:''; ?>">
-                        <?php echo form_error('zip','<span class="help-block">','</span>'); ?>
-                      </div>
+                          <label for="">City</label>
+                          <input type="text" class="form-control" name="city" placeholder="City" required="" value="<?php echo !empty($city)?$city:''; ?>">
+                          <?php echo form_error('city','<span class="help-block">','</span>'); ?>
+                        </div>
                       <div class="col-md-6">
                         <label for="">State*</label>
                         <select name="state" id="">
@@ -114,10 +114,10 @@
                   </div> 
                   <div class="form-group">
                     <div class="row">
-                      <div class="col-md-6">
-                        <label for="">City</label>
-                        <input type="text" class="form-control" name="city" placeholder="City" required="" value="<?php echo !empty($city)?$city:''; ?>">
-                        <?php echo form_error('city','<span class="help-block">','</span>'); ?>
+                    <div class="col-md-6">
+                        <label for="">Zip Code*</label>
+                        <input type="text" class="form-control" name="zip" placeholder="Zip/Postal Code" required="" value="<?php echo !empty($zip)?$zip:''; ?>">
+                        <?php echo form_error('zip','<span class="help-block">','</span>'); ?>
                       </div>
                       <div class="col-md-6">
                         <label for="">Country*</label>
@@ -180,7 +180,7 @@
                         <div class="row">
                           <div class="col-12">
                             <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
-                            <input type="text" class="selectBox" name="paymentOptionName" id="paymentOptionName" required>
+                            <input type="text" class="form-control" name="paymentOptionName" id="paymentOptionName" required>
                             <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
                           </div>
                         </div>
@@ -188,24 +188,19 @@
                       <div class="form-group">
                         <label for="card-number" class="label-txt">Credit Card Number*</span></label>
                         <div id="card-number"></div>
-                        <input type="text" class="selectBox" style="display:none;" 
-                                id="cardLastDigit" readonly="true" />
-                        <span id="cardNumberError" class="error"></span>
+                        <div class="invalid-feedback" id="card-number-error"></div>
                     </div>
                     <div class="form-group">
                       <div class="row">
                         <div class="col-6">
                           <label for="">Exp. Date*</label>
                           <div id="card-expiration"></div>
-                          <input type="text" class="selectBox" style="display:none;" 
-                                id="cardExpire" readonly="true" />
-                          <span id="cardExpirationError" class="error"></span>
+                          <div class="invalid-feedback" id="card-expiration-error"></div>
                         </div>
                         <div class="col-6">
                           <label for="">CVC*</label>
                           <div id="card-cvv"></div>
-                          <input type="text" class="selectBox" name="cardCvv" id="cardCvv" style="display:none;" />
-                          <span id="cardSecurityError" class="error"></span>
+                          <div class="invalid-feedback" id="card-cvv-error"></div>
                         </div>
                       </div>
                     </div>
@@ -221,7 +216,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
-                          <p>As the person creating this account, you represent and warrant that you have the authority to provide the information required and to create the account. If you do not have the appropriate authority and/or cannot provide the required information, please exit this form now. If you have the appropriate authority and can provide the required information, please click on the check box below and click on the "I agree" button.</p>
+                          <p>As the person creating this account, you represent and warrant that you have the authority to provide the information required and to create the account. If you do not have the appropriate authority and/or cannot provide the required information, please exit this form now. If you have the appropriate authority and can provide the required information, please click on the check box below.</p>
                         </div>
                       </div>
                     </div>
@@ -229,7 +224,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
-                          <label for="agreeAcc" class="pl-2">Yes, I have the appropriate authority to create this account and certify that the answers provided are true and accurate. I agree to comply with all terms in my Company’s agreements with VitalSight. I understand that failure to comply with all of the terms in these agreements will result in suspension or termination of my account.</label>
+                          <label for="agreeAcc" class="pl-2">* Yes, I have the appropriate authority to create this account and certify that the answers provided are true and accurate. I agree to comply with all terms in my Company’s agreements with VitalSight. I understand that failure to comply with all of the terms in these agreements will result in suspension or termination of my account.</label>
                           <input id="agreeAcc" type="checkbox" name="agreeAcc" value="yes" <?php echo (!empty($agreeTerms) && $agreeAcc == 'yes') ? 'checked': ''; ?> required>
                         </div>
                       </div>
@@ -238,7 +233,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
-                          <label for="agreeTerms" class="pl-2">By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
+                          <label for="agreeTerms" class="pl-2">* By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
                           <input id="agreeTerms" type="checkbox" name="agreeTerms" value="yes" <?php echo (!empty($agreeTerms) && $agreeTerms == 'yes') ? 'checked': ''; ?> required>
                         </div>
                       </div>

@@ -45,6 +45,11 @@ header .logo-wrapper {
     padding: 20px 0 0 84px;
 }
 
+img.site-logo {
+    max-width: 183px;
+    width: 100%;
+}
+
 /* FOOTER */
 footer {
     background-color: #0072BC;
@@ -152,7 +157,6 @@ footer img.pull-right {
 
 #card-number, #card-expiration, #card-cvv{
     font-size: 16px;
-    padding: 7px 10px;
     height: 48px;
     border: 1px solid #8c8c8c;
     border-radius: 0;
@@ -160,4 +164,30 @@ footer img.pull-right {
     font-family: Gotham;
     max-width: 514px;
     width: 100%;
+}
+
+.DRElement {
+    padding: 0 10px;
+    color: #888;
+    border: 1px solid #ced4da;
+    background-color: #fff;
+}
+
+.DRElement,
+.DRElement--empty,
+.DRElement--complete,
+.DRElement--invalid {
+    font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    height: 42px;
+}
+
+.DRElement--complete {
+    color: #69bf29;
+    border-color: #69bf29;
+}
+
+.DRElement--invalid {
+    color: #dc3545;
+    border-color: #dc3545;
 }

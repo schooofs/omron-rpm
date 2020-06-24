@@ -1,58 +1,74 @@
 $(document).ready(function(){
     if ($('#card-number').length ) {
+
         var digitalriverjs = new DigitalRiver('pk_c1a984305e6e4d2a88fda776629c3acc');
-        var options = {
+        const options = {
             classes: {
-                base: "DRElement",
-                complete: "complete",
-                empty: "empty",
-                focus: "focus",
-                invalid: "invalid",
-                webkitAutofill: "autofill"
+                base: 'DRElement',
+                complete: 'DRElement--complete',
+                empty: 'DRElement--empty',
+                invalid: 'DRElement--invalid'
             },
             style: {
-                base: {
-                    color: "#000",
-                    fontFamily: "Arial, Helvetica, sans-serif",
-                    fontSize: "13px",
-                    fontSmoothing: "auto",
-                    fontStyle: "normal",
-                    fontVariant: "normal",
-                    letterSpacing: "3px"
-                },
-                empty: {
-                    color: "#fff"
-                },
-                complete: {
-                    color: "green"
-                },
-                invalid: {
-                    color: "red",
-                }
+                base: getStyleOptionsFromClass('DRElement'),
+                complete: getStyleOptionsFromClass('DRElement--complete'),
+                empty: getStyleOptionsFromClass('DRElement--empty'),
+                invalid: getStyleOptionsFromClass('DRElement--invalid')
             }
         };
 
         var cardNumber = digitalriverjs.createElement('cardnumber', options);
-        var cardExpiration = digitalriverjs.createElement('cardexpiration', options);
-        var cardSecurityCode = digitalriverjs.createElement('cardcvv', options);
+        var cardExpiration = digitalriverjs.createElement('cardexpiration', Object.assign({}, options, { placeholderText: 'MM/YY' }));
+        var cardCVV = digitalriverjs.createElement('cardcvv', Object.assign({}, options, { placeholderText: 'CVV' }));
+
         cardNumber.mount('card-number');
         cardExpiration.mount('card-expiration');
-        cardSecurityCode.mount('card-cvv');
-    
-        $(".field").bind('mouseout', function (event) {
-            if ($('#card-number').hasClass("complete")) {
-                $('#cardNumberError').empty();
-            }
-            if ($('#card-expiration').hasClass("complete")) {
-                $('#cardExpirationError').empty();
-            }
-            if ($('#card-cvv').hasClass("complete")) {
-                $('#cardSecurityError').empty();
-            }
+        cardCVV.mount('card-cvv');
+
+        cardNumber.on('change', function(evt) {
+            activeCardLogo(evt);
+            displayDRElementError(evt, $('#card-number-error'));
         });
-    
-        
-        $( "iframe[id^='cardnumber']" ).append($("style[id='payment_iframe_style']"));
+        cardExpiration.on('change', function(evt) {
+            displayDRElementError(evt, $('#card-expiration-error'));
+        });
+        cardCVV.on('change', function(evt) {
+            displayDRElementError(evt, $('#card-cvv-error'));
+        });
+
+        function getStyleOptionsFromClass(className) {
+            const tempDiv = document.createElement('div');
+            tempDiv.setAttribute('id', 'tempDiv' + className);
+            tempDiv.className = className;
+            document.body.appendChild(tempDiv);
+            const tempDivEl = document.getElementById('tempDiv' + className);
+            const tempStyle = window.getComputedStyle(tempDivEl);
+
+            const styles = {
+                color: tempStyle.color,
+                fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
+                fontSize: tempStyle.fontSize,
+                height: tempStyle.height
+            };
+            document.body.removeChild(tempDivEl);
+
+            return styles;
+        }
+
+        function activeCardLogo(evt) {
+            $('.cards .active').removeClass('active');
+            if (evt.brand && evt.brand !== 'unknown') {
+                $(`.cards .${evt.brand}-icon`).addClass('active');
+            }
+        }
+
+        function displayDRElementError(evt, $target) {
+            if (evt.error) {
+                $target.text(evt.error.message).show();
+            } else {
+                $target.text('').hide();
+            }
+        }
     
         var sourceId = 0;
         $('#accountForm').submit(function(event){
@@ -123,3 +139,31 @@ $(document).ready(function(){
         });
     }
 });
+
+
+function getStyleOptionsFromClass(className) {
+    const tempDiv = document.createElement('div');
+    tempDiv.setAttribute('id', 'tempDiv' + className);
+    tempDiv.className = className;
+    document.body.appendChild(tempDiv);
+    const tempDivEl = document.getElementById('tempDiv' + className);
+    const tempStyle = window.getComputedStyle(tempDivEl);
+
+    const styles = {
+        color: tempStyle.color,
+        fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
+        fontSize: tempStyle.fontSize,
+        height: tempStyle.height
+    };
+    document.body.removeChild(tempDivEl);
+
+    return styles;
+}
+
+function displayDRElementError(evt, $target) {
+    if (evt.error) {
+        $target.text(evt.error.message).show();
+    } else {
+        $target.text('').hide();
+    }
+}

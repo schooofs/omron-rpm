@@ -17,7 +17,7 @@
                     </div>
                </div>
                <div class="col-md-2 col-12">
-                    <img class="pull-right" src="<?php echo base_url(); ?>assets/images/white-logo.png" alt="site-logo">
+                    <img class="pull-right site-logo" src="<?php echo base_url(); ?>assets/images/white-logo.png" alt="site-logo">
                </div>
            </div>
            

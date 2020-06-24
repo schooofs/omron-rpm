@@ -17,7 +17,7 @@
         <header>
             <div class="flex-container">
                 <div class="logo-wrapper">
-                    <img src="<?php echo base_url(); ?>assets/images/white-logo.png" alt="site-logo">
+                    <img class="site-logo" src="<?php echo base_url(); ?>assets/images/white-logo.png" alt="site-logo">
                 </div>
             </div>
         </header>
