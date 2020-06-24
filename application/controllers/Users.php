@@ -92,21 +92,8 @@ class Users extends CI_Controller
             $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
 
             if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                $data['paymentInfo'][] =  array(
-                    'paymentOptionId' => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['id'],
-                    'paymentOption' => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['nickName'],
-                    'expMonth'    => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['expirationMonth'],
-                    'expYear'    => $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['expirationYear'],
-                    'creditCardNum' => '**** **** **** ' . $shopperPaymentArray['paymentOptions']['paymentOption'][0]['creditCard']['lastFourDigits'],
-                );
-            } else {
-                $data['paymentInfo'][] =  array(
-                    'paymentOptionId' => 0,
-                    'paymentOption' => 'Add New',
-                    'expMonth'    => '',
-                    'expYear'    => '',
-                    'creditCardNum' => '',
-                );
+                var_dump($shopperPaymentArray['paymentOptions']['paymentOption']);
+                $data['paymentOption'] = $shopperPaymentArray['paymentOptions']['paymentOption'];
             }
 
             $data['stateCodes'] = $this->get_states();
@@ -207,14 +194,7 @@ class Users extends CI_Controller
                         'country'       => $billingDetails['country'],
                         'state'         => $billingDetails['countrySubdivision'],
                         'stateCodes'    => $this->get_states(),
-                        'paymentInfo'   => array(
-                            array(
-                                'paymentOptionId' => $paymentDetails['paymentOptions']['paymentOption'][0]['id'],
-                                'paymentOption' => $paymentDetails['paymentOptions']['paymentOption'][0]['nickName'],
-                                'expMonth'    => $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['expirationMonth'],
-                                'expYear'    => $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['expirationYear'],
-                                'creditCardNum' => '**** **** **** ' . $paymentDetails['paymentOptions']['paymentOption'][0]['creditCard']['lastFourDigits'],
-                        ) ),
+                        'paymentOption' => $paymentDetails['paymentOptions']['paymentOption'],
                         'agreeAcc'      => 'yes',
                         'agreeTerms'    => 'yes',
                         'success_msg'   => 'Changes successfully saved.',

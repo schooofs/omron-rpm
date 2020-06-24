@@ -162,41 +162,57 @@
                       </div>
                     </div>
 
-                    <?php if(isset($paymentInfo[0]['paymentOptionId']) && 0 !== $paymentInfo[0]['paymentOptionId']): ?>
-                      <div class="form-group"  id="user_payment_option">
+                    <?php if(isset($paymentOption[0]['id']) && 0 !== $paymentOption[0]['id']): ?>
+                      <div class="form-group">
                         <div class="row">
                           <div class="col-12">
-                            <label for="paymentOption" class="label-txt">Saved Payment Option</span></label>
-                            <select class="selectBox" name="paymentOption" id="paymentOption">
-                              <?php foreach($paymentInfo as $payment){?>
-                                <option value="<?php echo $payment['paymentOptionId']; ?>" selected><?php echo $payment['paymentOption'] . ': ' . $payment['creditCardNum']; ?></option>
-                              <?php } ?>
-                            </select>
+                            <table class="table table-hover">
+                              <thead>
+                              <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Number</th>
+                                <th scope="col">Type</th>
+                                <th scope="col"></th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                                <?php foreach($paymentOption as $key => $payment) :?>
+                                  <tr data-payment-id="<?php echo $payment['id']; ?>" class="<?php echo 'true' == $payment['isDefault'] ? 'default-payment' : ''; ?>">
+                                    <th scope="row"><?php echo 'true' == $payment['isDefault'] ? 'Default' : ''; ?></th>
+                                    <td><?php echo $payment['nickName']; ?></td>
+                                    <td>**** <?php echo $payment['creditCard']['lastFourDigits']; ?></td>
+                                    <td><?php echo $payment['creditCard']['brand']; ?></td>
+                                    <td><a href="">del</a></td>
+                                  </tr>
+                                <?php endforeach; ?>
+                              </tbody>
+                            </table>
                           </div>
                         </div>
                       </div>
-                    <?php else : ?>
-                      <div class="form-group" id="user_payment_name">
-                        <div class="row">
-                          <div class="col-12">
-                            <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
-                            <input type="text" class="form-control" name="paymentOptionName" id="paymentOptionName" required>
-                            <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
-                          </div>
+                    <?php endif; ?>
+                    <div class="form-group" id="user_payment_name">
+                      <div class="row">
+                        <div class="col-12">
+                          <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
+                          <input type="text" class="form-control" name="paymentOptionName" id="paymentOptionName" required>
+                          <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
                         </div>
                       </div>
+                    </div>
                       <div class="form-group">
                         <label for="card-number" class="label-txt">Credit Card Number*</span></label>
                         <div id="card-number"></div>
                         <div class="invalid-feedback" id="card-number-error"></div>
-                    </div>
-                    <div class="form-group">
-                      <div class="row">
-                        <div class="col-6">
-                          <label for="">Exp. Date*</label>
-                          <div id="card-expiration"></div>
-                          <div class="invalid-feedback" id="card-expiration-error"></div>
-                        </div>
+                      </div>
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col-6">
+                            <label for="">Exp. Date*</label>
+                            <div id="card-expiration"></div>
+                            <div class="invalid-feedback" id="card-expiration-error"></div>
+                          </div>
                         <div class="col-6">
                           <label for="">CVC*</label>
                           <div id="card-cvv"></div>
@@ -204,7 +220,6 @@
                         </div>
                       </div>
                     </div>
-                    <?php endif; ?>
                     <!-- <div class="form-group">
                       <div class="row">
                         <div class="col-12">

@@ -87,6 +87,10 @@ footer img.pull-right {
     margin: 35px 0 20px;
 }
 
+.alert {
+    border-radius: 0;
+}
+
 .content-wrapper {
     padding: 60px 38px;
     margin-bottom: 55px;
