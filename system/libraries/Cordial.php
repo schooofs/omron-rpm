@@ -30,12 +30,12 @@ class CI_Cordial
         return $response;
     }
 
-    public function postPasswordReset($data) {
-        $response = $this->httpClient->request('POST', $this->endPoint . 'asd/send' ,  [
-            'form_params' => $data,
-        ] );
-        $response = json_decode($response->getBody(), true);
-        $response['url'] = $this->endPoint;
-        return $response;
-    }
+    // public function postPasswordReset($data) {
+    //     $response = $this->httpClient->request('POST', $this->endPoint . 'test/send' ,  [
+    //         'form_params' => $data,
+    //     ] );
+    //     $response = json_decode($response->getBody(), true);
+    //     $response['url'] = $this->endPoint;
+    //     return $response;
+    // }
 }

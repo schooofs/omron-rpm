@@ -255,14 +255,14 @@ class Users extends CI_Controller
         {
             $data['user_login'] = $this->session->userdata('user_login');
         }
-        if($this->session->userdata('reset_pass_modal_msg'))
-        {
-            $data['reset_pass_modal_msg'] = $this->session->userdata('reset_pass_modal_msg');
-        }
-        if($this->session->userdata('pw_reset_id'))
-        {
-            $data['reset_pass'] = true;
-        }
+        // if($this->session->userdata('reset_pass_modal_msg'))
+        // {
+        //     $data['reset_pass_modal_msg'] = $this->session->userdata('reset_pass_modal_msg');
+        // }
+        // if($this->session->userdata('pw_reset_id'))
+        // {
+        //     $data['reset_pass'] = true;
+        // }
 
         $authService =  new Digitalriver\Service\Authenticate($this->_client);
         $authDrData = $authService->getDrSessionToken();
@@ -284,8 +284,6 @@ class Users extends CI_Controller
             if ($this->form_validation->run() == true) 
             {
 
-                // var_dump($this->input->post('email'), $this->input->post('password'), $drSessionToken);
-                // exit;
                 try {
                     $getFullAccessToken = $authService->getFullAccessToken(
                         $this->input->post('email'), $this->input->post('password'), $drSessionToken);
@@ -389,11 +387,15 @@ class Users extends CI_Controller
                 try {
                     $physicianId =strip_tags($this->input->post('physicianId'));
 
-                    $query = $this->db->query("SELECT `physician_id` FROM `ci_users`;");
+                    $query = $this->db->query("SELECT `username`, `physician_id` FROM `ci_users`;");
 
                     foreach ($query->result() as $row) {
                         if ($row->physician_id === $physicianId) {
                             $this->session->set_flashdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
+                            redirect('users/registration', $data);
+                        }
+                        if ($row->username === $userDetails['username']) {
+                            $this->session->set_flashdata('error_msg', 'User with email '. $userDetails['username'] .' is already registered.');
                             redirect('users/registration', $data);
                         }
                     }
@@ -452,107 +454,107 @@ class Users extends CI_Controller
      * User Reset Password
      */
 
-    public function resetPassword() {
-        $data = array();
+    // public function resetPassword() {
+    //     $data = array();
 
-        if($this->input->post('passwordReset'))
-        {
-            // Init password reset email
-            $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+    //     if($this->input->post('passwordReset'))
+    //     {
+    //         // Init password reset email
+    //         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 
-            if($this->form_validation->run() == true) {
-                try {
-                    $email = strip_tags($this->input->post('email'));
-                    $user = $this->user->getByUsername($email);
+    //         if($this->form_validation->run() == true) {
+    //             try {
+    //                 $email = strip_tags($this->input->post('email'));
+    //                 $user = $this->user->getByUsername($email);
 
-                    if ($user) {
-                        $authService =  new Digitalriver\Service\Authenticate($this->_client);
-                        $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+    //                 if ($user) {
+    //                     $authService =  new Digitalriver\Service\Authenticate($this->_client);
+    //                     $shopperService =  new Digitalriver\Service\Shopper($this->_client);
 
-                        $accessToken = $authService->generateAccessTokenByRefId($user->gc_reference);
-                        $fullAccessToken = $accessToken['access_token'];
+    //                     $accessToken = $authService->generateAccessTokenByRefId($user->gc_reference);
+    //                     $fullAccessToken = $accessToken['access_token'];
 
-                        if( !empty($fullAccessToken) ) {
-                            if( $this->user->forgotPassword($user) ) {
-                                $this->session->set_flashdata( 'success_msg', 'Please check your email for your password reset link.' );
-                                redirect('users/login');
-                            } else {
-                                $this->session->set_flashdata('reset_pass_modal_msg', 'Failed to authenticate. Please try again.');
-                            };
-                        }
-                    }
+    //                     if( !empty($fullAccessToken) ) {
+    //                         if( $this->user->forgotPassword($user) ) {
+    //                             $this->session->set_flashdata( 'success_msg', 'Please check your email for your password reset link.' );
+    //                             redirect('users/login');
+    //                         } else {
+    //                             $this->session->set_flashdata('reset_pass_modal_msg', 'Failed to authenticate. Please try again.');
+    //                         };
+    //                     }
+    //                 }
 
-                    $this->session->set_flashdata( 'reset_pass_modal_msg', $email . ' was not found!' );
-                    redirect('users/login', $data);
+    //                 $this->session->set_flashdata( 'reset_pass_modal_msg', $email . ' was not found!' );
+    //                 redirect('users/login', $data);
 
-                } catch ( Exception  $e) {
-                    $response = $e->getResponse();
-                    $responseBodyAsString = json_decode($response->getBody()->getContents());
-                    $data['status'] = 'error';
-                    $data['reset_pass_modal_msg'] = $responseBodyAsString->errors->error[0]->description;
-                }
-            }
+    //             } catch ( Exception  $e) {
+    //                 $response = $e->getResponse();
+    //                 $responseBodyAsString = json_decode($response->getBody()->getContents());
+    //                 $data['status'] = 'error';
+    //                 $data['reset_pass_modal_msg'] = $responseBodyAsString->errors->error[0]->description;
+    //             }
+    //         }
 
-        }
-        else if( $this->input->get('key') && $this->input->get('email') && $this->input->get('action') ) {
-            // Open password modal if the user has token created less than an hour ago
-            $username = strip_tags($this->input->get('email'));
-            $token = strip_tags($this->input->get('key'));
-            $action = strip_tags($this->input->get('action'));
+    //     }
+    //     else if( $this->input->get('key') && $this->input->get('email') && $this->input->get('action') ) {
+    //         // Open password modal if the user has token created less than an hour ago
+    //         $username = strip_tags($this->input->get('email'));
+    //         $token = strip_tags($this->input->get('key'));
+    //         $action = strip_tags($this->input->get('action'));
 
-            $user = $this->user->getByUsername($username);
+    //         $user = $this->user->getByUsername($username);
 
-            if( $user && 'reset' === $action && $token === $user->pw_reset_token ) {
+    //         if( $user && 'reset' === $action && $token === $user->pw_reset_token ) {
 
-                if( intval($user->pw_reset_token_created_at) >= (time() - 3600) ) {
-                    $this->session->set_userdata('user_login', $user->username);
-                    $this->session->set_userdata('pw_reset_id', $user->id);
-                } else {
-                    $this->session->unset_userdata('user_login');
-                    $this->session->unset_userdata('pw_reset_id');
-                    $this->user->update( [ 'pw_reset_token' => null, 'pw_reset_token_created_at' => null ], $user->username );
-                    $this->session->set_flashdata('error_msg', 'Your password reset link has expired');
-                }
-            } else {
-                $this->session->set_flashdata('error_msg', 'Your password reset link has expired');
-            }
-        }
-        else if ( $this->input->post('passSubmit') && $this->session->userdata('pw_reset_id') ) {
-            // Reset password and delete reset pw token
-            $this->form_validation->set_rules('new_password', 'password', 'required' );
-            $this->form_validation->set_rules('conf_new_password', 'confirm password', 'required|matches[new_password]');
+    //             if( intval($user->pw_reset_token_created_at) >= (time() - 3600) ) {
+    //                 $this->session->set_userdata('user_login', $user->username);
+    //                 $this->session->set_userdata('pw_reset_id', $user->id);
+    //             } else {
+    //                 $this->session->unset_userdata('user_login');
+    //                 $this->session->unset_userdata('pw_reset_id');
+    //                 $this->user->update( [ 'pw_reset_token' => null, 'pw_reset_token_created_at' => null ], $user->username );
+    //                 $this->session->set_flashdata('error_msg', 'Your password reset link has expired');
+    //             }
+    //         } else {
+    //             $this->session->set_flashdata('error_msg', 'Your password reset link has expired');
+    //         }
+    //     }
+    //     else if ( $this->input->post('passSubmit') && $this->session->userdata('pw_reset_id') ) {
+    //         // Reset password and delete reset pw token
+    //         $this->form_validation->set_rules('new_password', 'password', 'required' );
+    //         $this->form_validation->set_rules('conf_new_password', 'confirm password', 'required|matches[new_password]');
 
-            if($this->form_validation->run() == true) {
-                $user = $this->user->getById( $this->session->userdata('pw_reset_id') );
+    //         if($this->form_validation->run() == true) {
+    //             $user = $this->user->getById( $this->session->userdata('pw_reset_id') );
 
-                $authService =  new Digitalriver\Service\Authenticate($this->_client);
-                $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+    //             $authService =  new Digitalriver\Service\Authenticate($this->_client);
+    //             $shopperService =  new Digitalriver\Service\Shopper($this->_client);
 
-                if($user) {
-                    $accessToken = $authService->generateAccessTokenByRefId($user->gc_reference);
-                    $fullAccessToken = $accessToken['access_token'];
+    //             if($user) {
+    //                 $accessToken = $authService->generateAccessTokenByRefId($user->gc_reference);
+    //                 $fullAccessToken = $accessToken['access_token'];
 
-                    if( !empty($fullAccessToken) ) {
-                        $password = base64_encode($this->input->post('new_password'));
+    //                 if( !empty($fullAccessToken) ) {
+    //                     $password = base64_encode($this->input->post('new_password'));
 
-                        $shopperService->updateShopper( $fullAccessToken, [ 'password' => $password ] );
-                        $this->session->set_flashdata( 'success_msg', 'Your password has been successfully reset' );
+    //                     $shopperService->updateShopper( $fullAccessToken, [ 'password' => $password ] );
+    //                     $this->session->set_flashdata( 'success_msg', 'Your password has been successfully reset' );
 
-                    } else {
-                        $this->session->set_flashdata('error_msg', 'Failed to authenticate');
-                    }
+    //                 } else {
+    //                     $this->session->set_flashdata('error_msg', 'Failed to authenticate');
+    //                 }
 
-                    $this->user->update( [ 'pw_reset_token' => null, 'pw_reset_token_created_at' => null ], $user->username );
-                } else {
-                    $this->session->set_flashdata('error_msg', 'Username not found');
-                }
+    //                 $this->user->update( [ 'pw_reset_token' => null, 'pw_reset_token_created_at' => null ], $user->username );
+    //             } else {
+    //                 $this->session->set_flashdata('error_msg', 'Username not found');
+    //             }
 
-                $this->session->unset_userdata('pw_reset_id');
-            }
-        }
+    //             $this->session->unset_userdata('pw_reset_id');
+    //         }
+    //     }
 
-        redirect('users/login', $data);
-    }
+    //     redirect('users/login', $data);
+    // }
 
     public function get_states() {
         return array('AL'=>"Alabama",  'AK'=>"Alaska",  'AZ'=>"Arizona",  'AR'=>"Arkansas",  'CA'=>"California",  'CO'=>"Colorado",  'CT'=>"Connecticut",  'DE'=>"Delaware",  'DC'=>"District Of Columbia",  'FL'=>"Florida",  'GA'=>"Georgia",  'HI'=>"Hawaii",  'ID'=>"Idaho",  'IL'=>"Illinois",  'IN'=>"Indiana",  'IA'=>"Iowa",  'KS'=>"Kansas",  'KY'=>"Kentucky",  'LA'=>"Louisiana",  'ME'=>"Maine",  'MD'=>"Maryland",  'MA'=>"Massachusetts",  'MI'=>"Michigan",  'MN'=>"Minnesota",  'MS'=>"Mississippi",  'MO'=>"Missouri",  'MT'=>"Montana",'NE'=>"Nebraska",'NV'=>"Nevada",'NH'=>"New Hampshire",'NJ'=>"New Jersey",'NM'=>"New Mexico",'NY'=>"New York",'NC'=>"North Carolina",'ND'=>"North Dakota",'OH'=>"Ohio",  'OK'=>"Oklahoma",  'OR'=>"Oregon",  'PA'=>"Pennsylvania",  'RI'=>"Rhode Island",  'SC'=>"South Carolina",  'SD'=>"South Dakota",'TN'=>"Tennessee",  'TX'=>"Texas",  'UT'=>"Utah",  'VT'=>"Vermont",  'VA'=>"Virginia",  'WA'=>"Washington",  'WV'=>"West Virginia",  'WI'=>"Wisconsin",  'WY'=>"Wyoming");

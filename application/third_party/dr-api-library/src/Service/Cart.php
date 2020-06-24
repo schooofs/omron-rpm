@@ -258,7 +258,7 @@ class Cart extends \Digitalriver\Service {
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
-        
+
         return  $this->getRequest($url);
     }
     

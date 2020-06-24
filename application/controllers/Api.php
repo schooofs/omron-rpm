@@ -24,8 +24,6 @@ class Api extends RestController {
 
         $this->destination_verification_token = config_item('destination_token');
 
-        $this->load->library('cordial');
-
     }
 
     // Verify connection with Redox and return the challenge
@@ -106,14 +104,13 @@ class Api extends RestController {
                 ],
             ];
  
-            //Send monthly email notification
-            $cordial = $this->cordial->postMonthlyStatement($cordialBody);
+            $cordial = $this->user->cordialMonthlyNotification($cordialBody);
 
             $db_data = array(
                 'user_id'            => intval($user->id),
                 'data'               => $raw_submission,
                 'items'              => json_encode($items),
-                'email_notified'     => $cordial['success'] ? 1 : 0,
+                'email_notified'     => isset( $cordial['success'] ) ? 1 : 0,
                 'data_received_time' => time(),
                 'data_processed_time'=> null,
             );

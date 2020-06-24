@@ -16,6 +16,7 @@ class Cron extends CI_Controller  {
 
     }
 
+
     /**
      * Used to charge users automatically
      * This function is called by cron job once at 25th of the month at midnight 00:00 
@@ -31,12 +32,19 @@ class Cron extends CI_Controller  {
             $submissions = $this->submission->getThisMonth();
             // $submissions = $this->submissions->getUnprocessed();
             if (!$submissions) {
-                throw new \Exception("No data submissions were found!");
+                echo '---------------------------------------------------------------------------' . PHP_EOL;
+                echo 'No data submissions were found!' . PHP_EOL;
+                echo '---------------------------------------------------------------------------' . PHP_EOL;
+                exit;
             }
 
             foreach($submissions as $key => $submission) {
 
                 if( $submission->order_submitted ) {
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo 'No unprocessed submissions were found for ' . date('m-Y') . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    exit;
                     continue;
                 }
 
@@ -45,7 +53,11 @@ class Cron extends CI_Controller  {
                 $fullAccessToken = $accessToken['access_token'];
 
                 if (empty($fullAccessToken)){
-                    throw new \Exception("Failed to authenticate with GC!");
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo 'Failed to authenticate user [' . $user->gc_reference . '] within DR Global Commerce.' . PHP_EOL;
+                    echo 'Failed to process submission with ID [' . $submission->id . '] and EHR ID ['. $user->physician_id .']' . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    continue;
                 }
 
                 $items = json_decode($submission->items, true);
@@ -61,10 +73,12 @@ class Cron extends CI_Controller  {
                     'order_submitted'     => 1,
                 ], $submission->id);
 
-                echo 'Submission with ID "' . $submission->id . '" was processed.';
+                echo '---------------------------------------------------------------------------' . PHP_EOL;
+                echo 'Submission with ID "' . $submission->id . '" and EHR ID "'. $user->physician_id .'" was processed.' . PHP_EOL;
+                echo '---------------------------------------------------------------------------' . PHP_EOL;
             }
 
-            echo '---Done---';
+            echo '---Done---' . PHP_EOL;
 
         } else {
             echo "You dont have access";

@@ -44,6 +44,7 @@
   </div>
 </div>
 
+<?php /*
 <!-- Forgot Password Modal -->
 <div class="modal fade" id="resetPassword" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModal" aria-hidden="true" <?php echo !empty($reset_pass_modal_msg) ? 'data-trigger="true"': ''; ?>>
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -110,6 +111,7 @@
     </div>
   </div>
 <?php endif; ?>
+*/ ?>
 
 <?php 
     // $this->load->view('footer');
