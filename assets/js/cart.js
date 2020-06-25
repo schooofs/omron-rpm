@@ -1,5 +1,39 @@
 $(document).ready(function(){
-    if ($('#card-number').length ) {
+
+    if($('.payment-options').length) {
+        $('.payment-option-add-new').on('click', function(e) {
+            e.preventDefault();
+            
+            $('#payment-option').slideDown('fast');
+            $('#paymentOptionName').attr('required', true);
+        });
+
+        $('.payment-options').on('click', 'tbody tr', function(e) {
+
+            if(!$(this).hasClass('default-payment')) {
+                $('.table-overlay').show();
+                $.post( updatePaymentUrl,
+                {
+                    paymentId: $(this).data('paymentId')
+                },
+                function(data){
+                    if(data.success) {
+                        location.reload();
+                    } else {
+                        $('.table-overlay').hide();
+
+                    }
+                });
+            }
+        });
+
+        //Fix event bubbling in the above function
+        $(".payment-options a").click(function(e) {
+            e.stopPropagation();
+        });
+    }
+
+    if ($('#payment-option').length ) {
 
         var digitalriverjs = new DigitalRiver('pk_c1a984305e6e4d2a88fda776629c3acc');
         const options = {
@@ -69,14 +103,12 @@ $(document).ready(function(){
                 $target.text('').hide();
             }
         }
-    
-        var sourceId = 0;
-        $('#accountForm').submit(function(event){
-            
+
+        $('#accountForm').submit(function(event){ 
+            event.preventDefault();
             var $form = $(this);
-            if(!sourceId) {
-                event.preventDefault();
-    
+            
+            if( $('div#payment-option').css('display') != 'none' ) {
                 var owner = {
                     firstName: $('input[name="firstName"]').val(),
                     lastName: $('input[name="lastName"]').val(),   
@@ -90,51 +122,41 @@ $(document).ready(function(){
                         state: $('select[name="state"]').val(),
                     }
                 };
-        
+
                 var payload = {
                     "type": "creditCard",
-                    "usage": "single",
-                    "owner":owner,
-                    "amount": 1,
-                    "currency": "USD"
+                    "owner":owner
                 };
-        
-                //$('#paymentOption option:selected').val() == 'create_new'
-                if($('#paymentOptionName').length) {
-                    digitalriverjs.createSource(cardNumber,payload).then(function (result) {
-                        // $("#loading").hide();
-                        if (result.error) {
-                            for (var i = 0; i < (result.error.errors.length); i++) {
-                                if (result.error.errors[i].code.match("incomplete_card_number")) {
-                                    $("#cardNumberError").html(result.error.errors[i].message);
-                                }
-                                else if (result.error.errors[i].code.match("incomplete_expiration_date")) {
-                                    $("#cardExpirationError").html(result.error.errors[i].message);
-                                }
-                                else if (result.error.errors[i].code.match("incomplete_security_code")) {
-                                    $("#cardSecurityError").html(result.error.errors[i].message);
-                                }
-                                else if (result.error.errors[i].code.match("invalid_card_number")) {
-                                    $("#cardNumberError").html(result.error.errors[i].message);
-                                }
-                                else if (result.error.errors[i].code.match("invalid_expiration_month")) {
-                                    $("#cardExpirationError").html(result.error.errors[i].message);
-                                }                   
+
+                digitalriverjs.createSource(cardNumber,payload).then(function (result) {
+                    // $("#loading").hide();
+                    if (result.error) {
+                        for (var i = 0; i < (result.error.errors.length); i++) {
+                            if (result.error.errors[i].code.match("incomplete_card_number")) {
+                                $("#cardNumberError").html(result.error.errors[i].message);
                             }
-                        } else {
-                            cardDetails = result.source.creditCard;
-                            sourceId = result.source.id;
-                            $('input[name="paymentSourceId"]').val(sourceId);
-                            // console.log($('input[name="paymentSourceId"]').val());
-                            $form.submit();
+                            else if (result.error.errors[i].code.match("incomplete_expiration_date")) {
+                                $("#cardExpirationError").html(result.error.errors[i].message);
+                            }
+                            else if (result.error.errors[i].code.match("incomplete_security_code")) {
+                                $("#cardSecurityError").html(result.error.errors[i].message);
+                            }
+                            else if (result.error.errors[i].code.match("invalid_card_number")) {
+                                $("#cardNumberError").html(result.error.errors[i].message);
+                            }
+                            else if (result.error.errors[i].code.match("invalid_expiration_month")) {
+                                $("#cardExpirationError").html(result.error.errors[i].message);
+                            }                   
                         }
-                    }); //source
-                } else {
-                    // cardDetails = shoppersPayments[$('#paymentOption option:selected').val()];
-                    return true;
-                }
+                    } else {
+                        cardDetails = result.source.creditCard;
+                        sourceId = result.source.id;
+                        $('input[name="paymentSourceId"]').val(sourceId);
+                        $form[0].submit();
+                    }
+                }); //source
             } else {
-                return true;
+                $form[0].submit();
             }
         });
     }

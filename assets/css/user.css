@@ -48,3 +48,37 @@
     margin: 0;
     height: 28px;
 }
+
+.payment-options tr:hover{
+    cursor: pointer;
+}
+
+.payment-options i {
+    color: #FF0000;
+    font-size: 20px;
+}
+
+.payment-options i:hover {
+    color: #8B0000;
+}
+
+.payment-options .default-payment:first-child {
+    color: #155724;
+}
+
+.payment-options .default-payment {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.table-overlay {
+    display: none;
+    position: absolute;
+    background: white;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    opacity: .6;
+}

@@ -192,7 +192,7 @@ class Shopper extends \Digitalriver\Service {
      * 
      * Required access token and address id as input parameter 
     */
-    public function getAddressById ($accessToken, $addressId, $queryParm=null) {
+    public function getAddressById($accessToken, $addressId, $queryParm=null) {
         if ( !$accessToken || !$addressId) {
             throw new \Exception("Access Token or Address ID is missing");
         }
@@ -239,6 +239,25 @@ class Shopper extends \Digitalriver\Service {
         }
         
         return  $this->getRequest($url);
+    }
+
+    /***
+     * Deletes saved payment record.
+     * 
+     * Required paymentOptionId and access token as input 
+    */
+    public function deletePaymentOptionById($accessToken, $paymentOptionId ){
+        if ( !$accessToken || !$paymentOptionId) {
+            throw new \Exception("Access Token or Payment Option ID is missing");
+        }
+        $url = $this->client->getConfig()->get('shoppersUrl').'/me/payment-options/'.$paymentOptionId
+                . '?token='.$accessToken;
+
+        $headers = array(
+            'Accept' => 'application/json'
+        );
+        
+        return  $this->deleteRequest($url, array(), $headers);
     }
     
     /***

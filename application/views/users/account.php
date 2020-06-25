@@ -164,9 +164,10 @@
 
                     <?php if(isset($paymentOption[0]['id']) && 0 !== $paymentOption[0]['id']): ?>
                       <div class="form-group">
+                      <label class="cards-label" for="">Payment Options</label>
                         <div class="row">
                           <div class="col-12">
-                            <table class="table table-hover">
+                            <table class="table table-hover payment-options">
                               <thead>
                               <tr>
                                 <th scope="col"></th>
@@ -183,42 +184,54 @@
                                     <td><?php echo $payment['nickName']; ?></td>
                                     <td>**** <?php echo $payment['creditCard']['lastFourDigits']; ?></td>
                                     <td><?php echo $payment['creditCard']['brand']; ?></td>
-                                    <td><a href="">del</a></td>
+                                    <td>
+                                      <?php if('true' != $payment['isDefault']) :?>
+                                        <a href="<?php echo base_url(); ?>users/deletePayment?id=<?php echo $payment['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i>
+</a>
+                                      <?php endif; ?>
+                                    </td>
                                   </tr>
                                 <?php endforeach; ?>
                               </tbody>
                             </table>
+                            <div class="table-overlay"></div>
+                            <div class="">
+                              <a href="#" class="payment-option-add-new pull-right">+ Add New</a>
+                            </div>
                           </div>
                         </div>
                       </div>
                     <?php endif; ?>
-                    <div class="form-group" id="user_payment_name">
-                      <div class="row">
-                        <div class="col-12">
-                          <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
-                          <input type="text" class="form-control" name="paymentOptionName" id="paymentOptionName" required>
-                          <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
-                        </div>
-                      </div>
-                    </div>
-                      <div class="form-group">
-                        <label for="card-number" class="label-txt">Credit Card Number*</span></label>
-                        <div id="card-number"></div>
-                        <div class="invalid-feedback" id="card-number-error"></div>
-                      </div>
-                      <div class="form-group">
+                    <div id="payment-option" style="<?php echo (isset($paymentOption[0]['id']) && 0 !== $paymentOption[0]['id']) ? 'display: none;' : ''; ?>" >
+                      <div class="form-group" id="user_payment_name">
                         <div class="row">
-                          <div class="col-6">
-                            <label for="">Exp. Date*</label>
-                            <div id="card-expiration"></div>
-                            <div class="invalid-feedback" id="card-expiration-error"></div>
+                          <div class="col-12">
+                            <label for="paymentOptionName" class="label-txt">Payment Name*</span></label>
+                            <input type="text" class="form-control" name="paymentOptionName" id="paymentOptionName" <?php echo (isset($paymentOption[0]['id']) && 0 !== $paymentOption[0]['id']) ? '' : 'required'; ?>">
+                            <?php echo form_error('paymentOptionName','<span class="help-block">','</span>'); ?>
                           </div>
-                        <div class="col-6">
-                          <label for="">CVC*</label>
-                          <div id="card-cvv"></div>
-                          <div class="invalid-feedback" id="card-cvv-error"></div>
                         </div>
                       </div>
+                        <div class="form-group">
+                          <label for="card-number" class="label-txt">Credit Card Number*</span></label>
+                          <div id="card-number"></div>
+                          <div class="invalid-feedback" id="card-number-error"></div>
+                        </div>
+                        <div class="form-group">
+                          <div class="row">
+                            <div class="col-6">
+                              <label for="">Exp. Date*</label>
+                              <div id="card-expiration"></div>
+                              <div class="invalid-feedback" id="card-expiration-error"></div>
+                            </div>
+                          <div class="col-6">
+                            <label for="">CVC*</label>
+                            <div id="card-cvv"></div>
+                            <div class="invalid-feedback" id="card-cvv-error"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <input type="hidden" name="paymentSourceId" value="0">
                     </div>
                     <!-- <div class="form-group">
                       <div class="row">
@@ -254,7 +267,6 @@
                       </div>
                     </div>
 
-                    <input type="hidden" name="paymentSourceId" value="0">
                     <input type="hidden" name="accountForm" value="1">
 
                     <div class="form-group">
@@ -271,3 +283,6 @@
     </div>     
   </div>
 </div>
+<script>
+  var updatePaymentUrl = "<?php echo base_url(); ?>users/updatePayment";
+</script>

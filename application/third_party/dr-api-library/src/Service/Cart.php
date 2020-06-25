@@ -64,7 +64,7 @@ class Cart extends \Digitalriver\Service {
         }
         $url = $this->client->getConfig()->get('cartUrl').'/active/line-items/?productId='
                 . $lineitemId.'&token='.$accessToken.'&action='.$action.'&quantity='.$qunatity.
-                '&testOrder='.$this->client->getConfig()->get('testOrder');
+                '&testOrder='.$this->client->getConfig()->get('testOrder').'&sendEmail=true';
         if ( $queryParm ) {
             $url .= '&'.$queryParm;
         }
@@ -154,7 +154,7 @@ class Cart extends \Digitalriver\Service {
             throw new \Exception("Access Token is missing");
         }
         $url = $this->client->getConfig()->get('cartUrl').'/active/submit-cart?token='
-                .$accessToken.'&expand=all&format=json';
+                .$accessToken.'&expand=all&format=json&sendEmail=true';
         $headers = array(
             'Accept' => 'application/json'
         );

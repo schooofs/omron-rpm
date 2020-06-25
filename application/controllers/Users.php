@@ -92,7 +92,6 @@ class Users extends CI_Controller
             $shopperPaymentArray = $shopperService->getShopperPayments($fullAccessToken);
 
             if ( isset($shopperPaymentArray['paymentOptions']['paymentOption']) ) {
-                var_dump($shopperPaymentArray['paymentOptions']['paymentOption']);
                 $data['paymentOption'] = $shopperPaymentArray['paymentOptions']['paymentOption'];
             }
 
@@ -154,10 +153,9 @@ class Users extends CI_Controller
                     //Set shoppers billing address
                     $shopperAddress = $shopperService->updateShopperAddress($fullAccessToken, $billingDetails);
 
-                    //Set shoppers payment options if doesnt exists
-                    // TODO: be able save multiple payment methods so the shopper can choose from, update or delete
+                    //Set shoppers payment options
                     $paymentDetails = array();
-                    if (!$this->input->post('paymentOption')) {
+                    if (!empty($this->input->post('paymentSourceId'))) {
 
                         $paymentDetails = array(
                             'nickName'          => strip_tags($this->input->post('paymentOptionName')),
@@ -431,6 +429,80 @@ class Users extends CI_Controller
         redirect('users/login/', $data);
     }
 
+    public function updatePayment() {
+        $data = array(
+            'success' => false
+        );
+
+        if(!empty($this->input->post('paymentId'))) {
+            $paymentId = strip_tags($this->input->post('paymentId'));
+
+            $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+            $authService =  new Digitalriver\Service\Authenticate($this->_client);
+
+            if ( $this->session->userdata( 'access_token' ) != '' ) {
+                $tokenInformation = $authService->getTokenInformation($this->session->userdata('access_token'));
+    
+                if ($tokenInformation['authenticated'] === 'true') {
+    
+                    $fullAccessToken = $this->session->userdata( 'access_token' );
+                    $paymentOption = $shopperService->getPaymentOptionById($fullAccessToken, $paymentId);
+                        
+                    if(isset($paymentOption['paymentOption']) && intval($paymentId) === intval($paymentOption['paymentOption']['id'])) {
+                        
+                        $shopperService->updateShopperPayment($fullAccessToken, array(
+                            'id'        => $paymentOption['paymentOption']['id'],
+                            'sourceId'  => $paymentOption['paymentOption']['sourceId'],
+                            'isDefault' => true,
+                        ));
+                        
+                        $data['success'] = true;
+                        $this->session->set_flashdata('success_msg', 'Changes successfully saved.');
+                    }
+                }
+                
+            }
+
+        }
+
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_status_header(200)
+            ->set_output(json_encode($data));
+
+    }
+    /**
+     * User delete payment
+     */
+    public function deletePayment() {
+        if($this->input->get('id')) {
+            $paymentId = strip_tags($this->input->get('id'));
+
+            $shopperService =  new Digitalriver\Service\Shopper($this->_client);
+            $authService =  new Digitalriver\Service\Authenticate($this->_client);
+            
+            if ( $this->session->userdata( 'access_token' ) != '' ) {
+                $tokenInformation = $authService->getTokenInformation($this->session->userdata( 'access_token'));
+    
+                if ($tokenInformation['authenticated'] !== 'true') {
+                    redirect('users/login');
+                }
+    
+                $fullAccessToken = $this->session->userdata( 'access_token' );
+                $paymentOption = $shopperService->getPaymentOptionById($fullAccessToken, $paymentId);
+
+                if(isset($paymentOption['paymentOption']) && intval($paymentId) === intval($paymentOption['paymentOption']['id'])) {
+
+                    $shopperService->deletePaymentOptionById($fullAccessToken, $paymentId);
+
+                    $this->session->set_flashdata('success_msg', 'Changes successfully saved.');
+                    redirect('users/account');
+                }
+                
+            }
+        }
+        redirect('users/login');
+    }
     /**
      * User Reset Password
      */

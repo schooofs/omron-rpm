@@ -24,7 +24,7 @@ class Cron extends CI_Controller  {
     public function monthlySubmissions() {
         $authService = new Digitalriver\Service\Authenticate($this->_client);
         $cartService = new Digitalriver\Service\Cart($this->_client);
-        $shopperService = new Digitalriver\Service\Shopper($this->_client);
+        // $shopperService = new Digitalriver\Service\Shopper($this->_client);
 
         // Allow only cli access
         if($this->input->is_cli_request()) {
