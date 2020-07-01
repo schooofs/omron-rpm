@@ -52,7 +52,7 @@ class Cron extends CI_Controller  {
 
                 if( $submission->order_submitted ) {
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
-                    echo 'Submission with ID "' . $submission->id . '" and EHR ID "'. $user->physician_id .'" was already processed on ' . date("D M j G:i:s T Y", $submission->data_processed_time )  . ' ' . PHP_EOL;
+                    echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was already processed on ' . date("D M j G:i:s T Y", $submission->data_processed_time )  . ' ' . PHP_EOL;
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
                     continue;
                 }
@@ -63,7 +63,7 @@ class Cron extends CI_Controller  {
                 if (empty($fullAccessToken)){
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
                     echo 'Failed to authenticate user [' . $user->gc_reference . '] within DR Global Commerce.' . PHP_EOL;
-                    echo 'Failed to process submission with ID [' . $submission->id . '] and EHR ID ['. $user->physician_id .']' . PHP_EOL;
+                    echo 'Failed to process submission with ID [' . $submission->id . '] and Account Number ['. $user->physician_id .']' . PHP_EOL;
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
                     continue;
                 }
@@ -82,7 +82,7 @@ class Cron extends CI_Controller  {
                 ], $submission->id);
 
                 echo '---------------------------------------------------------------------------' . PHP_EOL;
-                echo 'Submission with ID "' . $submission->id . '" and EHR ID "'. $user->physician_id .'" was processed.' . PHP_EOL;
+                echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was processed.' . PHP_EOL;
                 echo '---------------------------------------------------------------------------' . PHP_EOL;
             }
 

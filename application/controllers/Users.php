@@ -113,14 +113,14 @@ class Users extends CI_Controller
 
                 try {
 
-                    //Check for  duplicant EHRID
+                    //Check for  duplicant Account Number
                     $query = $this->db->query("SELECT `physician_id` FROM `ci_users` WHERE username<>'".$this->session->userdata('user_login')."';");
 
                     $physicianId = strip_tags($this->input->post('physicianId'));
 
                     foreach ($query->result() as $row) {
                         if ($row->physician_id === $physicianId) {
-                            $this->session->set_flashdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
+                            $this->session->set_flashdata('error_msg', 'Account Number: '. $physicianId .' is already registered by another user.');
                             redirect('users/account');
                         }
                     }
@@ -370,7 +370,7 @@ class Users extends CI_Controller
 
                     foreach ($query->result() as $row) {
                         if ($row->physician_id === $physicianId) {
-                            $this->session->set_flashdata('error_msg', 'EHR ID: '. $physicianId .' is already registered by another user.');
+                            $this->session->set_flashdata('error_msg', 'Account Number: '. $physicianId .' is already registered by another user.');
                             redirect('users/registration', $data);
                         }
                         if ($row->username === $userDetails['username']) {

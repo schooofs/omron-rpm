@@ -48,7 +48,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-md-12">
-                          <label for="">EHR ID*</label>
+                          <label for="">Account Number*</label>
                           <input type="text" class="form-control" name="physicianId" placeholder="111-222-333-444" required="" value="<?php echo !empty($user['physicianId'])?$user['physicianId']:''; ?>">
                         <?php echo form_error('physicianid','<span class="help-block">','</span>'); ?>
                         </div>
