@@ -111,7 +111,7 @@
                         <?php echo form_error('state','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>
-                  </div> 
+                  </div>
                   <div class="form-group">
                     <div class="row">
                     <div class="col-md-6">
@@ -131,7 +131,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- PAYMENT SECTION -->
               <h2 class="section-heading">Payment Information</h2>
               <div class="sec-divider"></div>
@@ -248,7 +248,7 @@
                         </div>
                       </div>
                     </div>
-                    
+
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
@@ -261,7 +261,7 @@
                     <div class="form-group">
                       <div class="row">
                         <div class="col-12">
-                          <label for="agreeTerms" class="pl-2">* By creating this account, I agree to the Terms of Sale and the Privacy Policy of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
+                          <label for="agreeTerms" class="pl-2">* By creating this account, I agree to the <a href="https://store.omronhealthcare.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage" target="_blank">Terms of Sale</a> and the <a href="https://store.omronhealthcare.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage" target="_blank">Privacy Policy</a> of DR globalTech Inc. You expressly authorize and permit Digital River to store your payment information and automatically bill your payment method on file on a monthly basis based on usage. You will be provided with an order confirmation email each month. You can discontinue participation in this program at any time by contacting OMRON Healthcare, Inc.</label>
                           <input id="agreeTerms" type="checkbox" name="agreeTerms" value="yes" <?php echo (!empty($agreeTerms) && $agreeTerms == 'yes') ? 'checked': ''; ?> required>
                         </div>
                       </div>
@@ -279,8 +279,8 @@
                   </div>
               </div>
           </form>
-        </div>      
-    </div>     
+        </div>
+    </div>
   </div>
 </div>
 <script>
