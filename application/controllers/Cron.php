@@ -19,7 +19,7 @@ class Cron extends CI_Controller  {
 
     /**
      * Used to charge users automatically
-     * This function is called by cron job once at 25th of the month at midnight 00:00 
+     * This function is called by cron job once at 25th of the month at midnight 00:00
      */
     public function monthlySubmissions() {
         $authService = new Digitalriver\Service\Authenticate($this->_client);
@@ -28,7 +28,7 @@ class Cron extends CI_Controller  {
 
         // Allow only cli access
         if($this->input->is_cli_request()) {
-            
+
             $submissions = $this->submission->getThisMonth();
             // $submissions = $this->submissions->getUnprocessed();
             if (!$submissions) {
@@ -69,21 +69,33 @@ class Cron extends CI_Controller  {
                 }
 
                 $items = json_decode($submission->items, true);
-                foreach($items as $item) {
-                    $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] );
+                if( isset($items) ) {
+
+                    foreach($items as $item) {
+                        $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] );
+                    }
+
+                    $cartService->applyShopper($fullAccessToken);
+                    $cartService->submitCart($fullAccessToken);
+
+                    $this->submission->update([
+                        'data_processed_time' => time(),
+                        'order_submitted'     => 1,
+                    ], $submission->id);
+
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was processed.' . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+
+                } else {
+
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was NOT processed.' . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+
                 }
 
-                $cartService->applyShopper($fullAccessToken);
-                $cartService->submitCart($fullAccessToken);
 
-                $this->submission->update([
-                    'data_processed_time' => time(),
-                    'order_submitted'     => 1,
-                ], $submission->id);
-
-                echo '---------------------------------------------------------------------------' . PHP_EOL;
-                echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was processed.' . PHP_EOL;
-                echo '---------------------------------------------------------------------------' . PHP_EOL;
             }
 
             echo '---Done---' . PHP_EOL;
