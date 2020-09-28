@@ -22,8 +22,10 @@
     font-weight: 600;
 }
 
+@import "fonts.css";
+
 html,body {
-    font-family: 'Gotham', sans-serif;
+    font-family: 'Gotham A', 'Gotham B', sans-serif;
     font-size: 16px;
     font-weight: 400;
     background-color: #ECECEC;
@@ -103,7 +105,7 @@ footer img.pull-right {
     border: 1px solid #8c8c8c;
     border-radius: 0;
     background-color: #ffffff;
-    font-family: sans-serif;
+    font-family: 'Gotham A', 'Gotham B', sans-serif;
     max-width: 514px;
     width: 100%;
     -webkit-user-select: text;
@@ -116,7 +118,7 @@ footer img.pull-right {
     border: 1px solid #8c8c8c;
     border-radius: 0;
     background-color: #ffffff;
-    font-family: sans-serif;
+    font-family: 'Gotham A', 'Gotham B', sans-serif;
     max-width: 514px;
     width: 100%;
 }
@@ -124,14 +126,10 @@ footer img.pull-right {
 .form-wrapper textarea {
     font-size: 16px;
     border: 1px solid #8c8c8c;
-    font-family: sans-serif;
+    font-family: 'Gotham A', 'Gotham B', sans-serif;;
     border-radius: 0;
     max-width: 514px;
     width: 100%;
-}
-
-label {
-    font-family: sans-serif;
 }
 
 .form-wrapper .form-group {
