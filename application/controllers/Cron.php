@@ -103,6 +103,8 @@ class Cron extends CI_Controller  {
                                 echo '---------------------------------------------------------------------------' . PHP_EOL;
                                 echo ' --- Submit Part of Submission with total: ' . $cart_total . PHP_EOL;
                                 echo '---------------------------------------------------------------------------' . PHP_EOL;
+                                
+                                $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
                             }
 
                             while( $added_qty < $item_qty ) {
@@ -129,6 +131,7 @@ class Cron extends CI_Controller  {
                         }
                     }
 
+                    $cartService->applyShopper($fullAccessToken);
                     $cartService->submitCart($fullAccessToken);
 
                     $this->submission->update([
