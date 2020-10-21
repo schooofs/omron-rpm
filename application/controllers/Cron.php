@@ -68,11 +68,67 @@ class Cron extends CI_Controller  {
                     continue;
                 }
 
+                $submittion_data = json_decode($submission->data, true);
+                $cartService->applyShopper($fullAccessToken);
+                $payment_type = $cartService->retrieveCart($fullAccessToken)['cart']['paymentMethod']['type'];
                 $items = json_decode($submission->items, true);
-                if( isset($items) ) {
+                $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
 
-                    foreach($items as $item) {
-                        $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] );
+                if( isset($items) ) {
+                    if ( $payment_type !== 'creditCard' ) {
+                        foreach($items as $item) {
+                            $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] );
+                        }
+                    } else {
+                        foreach($items as $item) {
+                            $item_qty = $item['quantity'];
+                            $added_qty = 0;
+                            $cart_limit = 59999;
+                            
+                            $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', 1 );
+                            $added_qty++;
+                            
+                            $single_item_price = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'] - $cart_total;
+
+                            $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
+                            
+                            if ( $cart_total > $cart_limit ) {
+                                $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'update', -1 );
+                                $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
+                                $added_qty--;
+
+                                $cartService->applyShopper($fullAccessToken);
+                                $cartService->submitCart($fullAccessToken);
+                                
+                                echo '---------------------------------------------------------------------------' . PHP_EOL;
+                                echo ' --- Submit Part of Submission with total: ' . $cart_total . PHP_EOL;
+                                echo '---------------------------------------------------------------------------' . PHP_EOL;
+                                
+                                $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
+                            }
+
+                            while( $added_qty < $item_qty ) {
+                                if ( $single_item_price * ( $item['quantity'] - $added_qty ) < $cart_limit ) {
+                                    $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $item['quantity'] - $added_qty );
+                                    $added_qty = $item_qty;
+                                } else {
+                                    $remaining_to_limit = $cart_limit - $cart_total;
+                                    $qty_to_limit = intval( $remaining_to_limit / $single_item_price );
+                                    $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', $qty_to_limit );
+                                    $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
+                                    $added_qty += $qty_to_limit;
+                                    
+                                    $cartService->applyShopper($fullAccessToken);
+                                    $cartService->submitCart($fullAccessToken);
+                                    
+                                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                                    echo ' --- Submit Part of Submission with total: ' . $cart_total . PHP_EOL;
+                                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                                }
+
+                                $cart_total = $cartService->retrieveCart( $fullAccessToken )['cart']['pricing']['orderTotal']['value'];
+                            }
+                        }
                     }
 
                     $cartService->applyShopper($fullAccessToken);
@@ -83,6 +139,9 @@ class Cron extends CI_Controller  {
                         'order_submitted'     => 1,
                     ], $submission->id);
 
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
+                    echo ' --- Submit Cart with total: ' . $cart_total . PHP_EOL;
+                    echo '---------------------------------------------------------------------------' . PHP_EOL;
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
                     echo 'Submission with ID "' . $submission->id . '" and Account Number "'. $user->physician_id .'" was processed.' . PHP_EOL;
                     echo '---------------------------------------------------------------------------' . PHP_EOL;
