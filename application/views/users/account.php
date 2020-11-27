@@ -56,8 +56,8 @@
                     <div class="row">
                       <div class="col-md-12">
                         <label for="">Email*</label>
-                        <p>For multiple email addresses, separate with a comma.</p>
-                        <textarea type="email" class="form-control" name="email" placeholder="Email" required="" ><?php echo !empty($emailAddress)?$emailAddress:''; ?></textarea>
+                        <!-- <p>For multiple email addresses, separate with a comma.</p> -->
+                        <input type="email" class="form-control" name="email" placeholder="Email" required="" value="<?php echo !empty($emailAddress)?$emailAddress:''; ?>" >
                     <?php echo form_error('email','<span class="help-block">','</span>'); ?>
                       </div>
                     </div>

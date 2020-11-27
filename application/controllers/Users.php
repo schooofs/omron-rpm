@@ -125,8 +125,12 @@ class Users extends CI_Controller
                         }
                     }
 
+                    $user_emails = strip_tags($this->input->post('email'));
+                    $user_emails = explode( ',', $user_emails );
+                    $user_email = isset( $user_emails[0] ) ? $user_emails[0] : '';
+
                     $userDetails = array (
-                        'emailAddress' => strip_tags($this->input->post('email')),
+                        'emailAddress' => $user_email,
                         'firstName' => strip_tags($this->input->post('firstName')),
                         'lastName' => strip_tags($this->input->post('lastName')),
                     );
