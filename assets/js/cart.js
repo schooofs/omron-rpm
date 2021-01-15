@@ -112,7 +112,7 @@ $(document).ready(function(){
                 var owner = {
                     firstName: $('input[name="firstName"]').val(),
                     lastName: $('input[name="lastName"]').val(),   
-                    email: $('textarea[name="email"]').val(),
+                    email: $('input[name="email"]').val(),
                     address: {
                         line1: $('input[name="address1"]').val(),
                         line2: $('input[name="address2"]').val(),
