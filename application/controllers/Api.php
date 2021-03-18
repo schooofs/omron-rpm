@@ -130,6 +130,95 @@ class Api extends RestController {
         }
     }
 
+    public function physiciansmultiple_post()
+    {
+        $headers = $this->input->request_headers();
+        if ( !array_key_exists('verification-token', $headers) && $headers['verification-token'] !== $this->destination_verification_token ) {
+            $this->response( [
+                'status' => false,
+                'message' => 'verification-token did not match!'
+            ], 400 );
+        }
+
+        $db_data = array();
+        $raw_submission = $this->input->raw_input_stream;
+        $submission = json_decode($raw_submission, true);
+
+        if( !empty($submission) && array_key_exists('PhysicianID', $submission) ) {
+            $physicianId = $submission['PhysicianID'];
+
+            if(array_key_exists('Items', $submission)) {
+                $items_per_zip = [];
+                $total_items = 0;
+                $total_amount = 0;
+                $currency = '';
+
+                foreach ($submission['Items'] as $item ) {
+                    $items_per_zip[ $item['ZIP'] ][] = array(
+                        'sku' => $item['SKU'],
+                        'quantity' => $item['Qty'],
+                    );
+                }
+
+                $user = $this->user->getByPhysicianId($physicianId);
+
+                foreach ( $items_per_zip as $items ) {
+                    $activeCart = $this->buildCart($user->gc_reference, $items);
+                    $qty = 0;
+                    
+                    foreach($activeCart['cart']['cart']['lineItems']['lineItem'] as $prod) {
+                        $qty += intval($prod['quantity']);
+                    }
+                    
+                    $db_data = array(
+                        'user_id'            => intval($user->id),
+                        'data'               => $raw_submission,
+                        'items'              => json_encode($items),
+                        'email_notified'     => 1,
+                        'data_received_time' => time(),
+                        'data_processed_time'=> null,
+                    );
+                    
+                    $this->submission->insert($db_data);
+                    $total_items += $qty;
+                    $total_amount += $activeCart['cart']['cart']['pricing']['orderTotal']['value'];
+                    $currency = $activeCart['cart']['cart']['pricing']['orderTotal']['currency'];
+                }
+            } else {
+                $this->response( [
+                    'status' => false,
+                    'message' => 'No Items were found.'
+                ], 400 );
+            }
+
+            $cordialBody =  [
+                'identifyBy'    => 'email',
+                'to'            => [
+                    'contact'       => [
+                        'email'         => $user->username,
+                    ],
+                    'extVars'           => [
+                        'vs_company_name'       => $activeCart['address']['addresses']['address'][0]['companyName'],
+                        'vs_payment_amount'     => number_format($total_amount, 2) . $currency,
+                        'vs_numberofproducts'   => $total_items
+                    ],
+                ],
+            ];
+            
+            $cordial = $this->user->cordialMonthlyNotification($cordialBody);
+
+            $this->response( [
+                'status' => true,
+                'message' => 'success'
+            ], 200 );
+        } else {
+            $this->response( [
+                'status' => false,
+                'message' => 'No data or FacilityCode was found.'
+            ], 400 );
+        }
+    }
+    
     // Create GC Cart from submission
     public function buildCart($gcReference, $items) {
         if( !$gcReference && !$items ) {
