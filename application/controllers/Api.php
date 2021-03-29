@@ -29,9 +29,9 @@ class Api extends RestController {
     // Verify connection with Redox and return the challenge
     public function physicians_get()
     {
-    	$headers = $this->input->request_headers();
+    	$verification_token = $this->input->get('verification-token');
 
-    	if ( array_key_exists('verification-token', $headers) && $headers['verification-token'] === $this->destination_verification_token ) {
+    	if ( $verification_token && $verification_token === $this->destination_verification_token ) {
 			$challenge = $this->get('challenge');
 
 			$this->response($challenge, 200);
@@ -47,8 +47,10 @@ class Api extends RestController {
     public function physicians_post()
     {
         //Verify source
-        $headers = $this->input->request_headers();
-        if ( !array_key_exists('verification-token', $headers) && $headers['verification-token'] !== $this->destination_verification_token ) {
+        $raw_submission = $this->input->raw_input_stream;
+        $submission = json_decode($raw_submission, true);
+        
+        if ( !array_key_exists('verification-token', $submission) || $submission['verification-token'] !== $this->destination_verification_token ) {
 			$this->response( [
                 'status' => false,
                 'message' => 'verification-token did not match!'
@@ -57,8 +59,6 @@ class Api extends RestController {
 
         $db_data = array();
         $items = array();
-		$raw_submission = $this->input->raw_input_stream;
-        $submission = json_decode($raw_submission, true);
 
         if( !empty($submission) && array_key_exists('FacilityCode', $submission['Meta']) ) {
             $physicianId = $submission['Meta']['FacilityCode'];
