@@ -50,7 +50,7 @@ class Api extends RestController {
         $raw_submission = $this->input->raw_input_stream;
         $submission = json_decode($raw_submission, true);
         
-        if ( !array_key_exists('verification-token', $submission) || $submission['verification-token'] !== $this->destination_verification_token ) {
+        if ( empty($submission) || !array_key_exists('verification-token', $submission) || $submission['verification-token'] !== $this->destination_verification_token ) {
 			$this->response( [
                 'status' => false,
                 'message' => 'verification-token did not match!'
@@ -132,8 +132,10 @@ class Api extends RestController {
 
     public function physiciansmultiple_post()
     {
-        $headers = $this->input->request_headers();
-        if ( !array_key_exists('verification-token', $headers) && $headers['verification-token'] !== $this->destination_verification_token ) {
+        $raw_submission = $this->input->raw_input_stream;
+        $submission = json_decode($raw_submission, true);
+
+        if ( empty($submission) || !array_key_exists('verification-token', $submission) || $submission['verification-token'] !== $this->destination_verification_token ) {
             $this->response( [
                 'status' => false,
                 'message' => 'verification-token did not match!'
@@ -141,8 +143,7 @@ class Api extends RestController {
         }
 
         $db_data = array();
-        $raw_submission = $this->input->raw_input_stream;
-        $submission = json_decode($raw_submission, true);
+
 
         if( !empty($submission) && array_key_exists('PhysicianID', $submission) ) {
             $physicianId = $submission['PhysicianID'];
