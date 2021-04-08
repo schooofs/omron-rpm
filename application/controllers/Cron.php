@@ -83,7 +83,7 @@ class Cron extends CI_Controller  {
                         foreach($items as $item) {
                             $item_qty = $item['quantity'];
                             $added_qty = 0;
-                            $cart_limit = 59999;
+                            $cart_limit = 199999;
                             
                             $cartService->updateLineItem( $item['sku'], $fullAccessToken, 'add', 1 );
                             $added_qty++;
